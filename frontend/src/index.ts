@@ -28,7 +28,7 @@ async function createSiweMessage(address:string, statement:string) {
         statement,
         uri: origin,
         version: '1',
-        chainId: '1',
+        chainId: 1,
         nonce: 'abc' //await res.text()
     });
     return message.prepareMessage();
