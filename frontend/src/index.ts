@@ -46,17 +46,24 @@ async function signInWithEthereum() {
         'Sign in with Ethereum to the app.'
     );
     const signature = await signer.signMessage(message);
- 
-    // Send signed message to backend for verification
-    const res = await fetch(`${BACKEND_ADDR}/verify`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message, signature }),
-        credentials: 'include'
-    });
-    console.log(await res.text());
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = `${BACKEND_ADDR}/login`;
+
+    const messageField = document.createElement('input');
+    messageField.type = 'hidden';
+    messageField.name = 'message';
+    messageField.value = message;
+    form.appendChild(messageField);
+
+    const signatureField = document.createElement('input');
+    signatureField.type = 'hidden';
+    signatureField.name = 'signature';
+    signatureField.value = signature;
+    form.appendChild(signatureField);
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 /**
