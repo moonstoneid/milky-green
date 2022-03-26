@@ -36,7 +36,7 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                    .antMatchers("/res/**")
+                    .antMatchers("/res/**", "/js/**")
                     .and()
                 .authorizeRequests()
                     .anyRequest().permitAll()
@@ -87,7 +87,7 @@ public class WebSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
                 .authorizeRequests()
-                    .antMatchers("/", "/login").permitAll()
+                    .antMatchers("/", "/login", "/nonce").permitAll()
                     .antMatchers("/**").authenticated()
                     .and()
                 .formLogin()

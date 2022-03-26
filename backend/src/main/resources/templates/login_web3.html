@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gimme your signature, baby ;-)</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <div th:if="${param.error}">Invalid username and password.</div>
+    <div th:if="${param.logout}">You have been logged out.</div>
+    <div id="errorDiv" style="visibility: hidden"></div>
+    <input type="button" id="loginButton" value="Login with MetaMask" />
+    <script type="text/javascript" th:src="@{js/bundle.js}"></script>
+</body>
+</html>
