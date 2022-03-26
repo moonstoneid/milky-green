@@ -45,6 +45,7 @@ async function signInWithEthereum() {
         await signer.getAddress(),
         'Sign in with Ethereum to the app.'
     );
+
     const signature = await signer.signMessage(message);
     const form = document.createElement('form');
     form.method = 'post';
@@ -53,16 +54,24 @@ async function signInWithEthereum() {
     const messageField = document.createElement('input');
     messageField.type = 'hidden';
     messageField.name = 'message';
-    messageField.value = message;
+    messageField.value = window.btoa(message); // encode Base64
     form.appendChild(messageField);
 
     const signatureField = document.createElement('input');
     signatureField.type = 'hidden';
     signatureField.name = 'signature';
-    signatureField.value = signature;
+    signatureField.value = window.btoa(signature); // encode Base64
     form.appendChild(signatureField);
 
     document.body.appendChild(form);
+
+    // Set CSRF (CSRF is enabled by default in spring boot), otherwise request is rejected
+    const csrfField = document.createElement('input');
+    csrfField.type = 'hidden';
+    csrfField.name = '_csrf';
+    csrfField.value = document.querySelector("meta[name='_csrf']").getAttribute("content");
+    form.appendChild(csrfField);
+
     form.submit();
 }
 

@@ -97,10 +97,10 @@ public class WebSecurityConfig {
                 .logout()
                     .permitAll()
                     .and()
-                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // todo: replace filter
         }
 
-        private Filter myAuthenticationFilter() {
+      private Filter myAuthenticationFilter() {
             UsernamePasswordAuthenticationFilter filter = new MyAuthenticationFilter();
             filter.setAuthenticationManager(myAuthenticationManager());
             filter.setAuthenticationFailureHandler(myAuthenticationFailureHandler());
@@ -127,14 +127,16 @@ public class WebSecurityConfig {
 
         @Bean
         public UserDetailsService myUserDetailsService() {
+            // Create new user and store it in a db
             UserDetails user = User.builder()
-                    .username("user1")
-                    .password("password1")
+                    .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
+                    .password("")
+                    // .username("a")
+                    // .password("a")
                     .roles("USER")
                     .build();
             return new InMemoryUserDetailsManager(user);
         }
-
     }
 
 }
