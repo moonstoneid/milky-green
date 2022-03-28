@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { SiweMessage } from 'siwe';
 declare var window: any
 
-const BACKEND_ADDR = "http://localhost:3000";
+
 const domain = window.location.host;
 const origin = window.location.origin;
 const ethereum = window.ethereum;
@@ -19,9 +19,9 @@ var signer:ethers.providers.JsonRpcSigner;
  * 
  */
 async function createSiweMessage(address:string, statement:string) {
-   /* const res = await fetch(`${BACKEND_ADDR}/nonce`, {
+    const res = await fetch('/nonce', {
         credentials: 'include',
-    }); */
+    });
     const message = new SiweMessage({
         domain,
         address,
@@ -29,7 +29,7 @@ async function createSiweMessage(address:string, statement:string) {
         uri: origin,
         version: '1',
         chainId: 1,
-        nonce: 'abc' //await res.text()
+        nonce: await res.text()
     });
     return message.prepareMessage();
 }
@@ -45,24 +45,33 @@ async function signInWithEthereum() {
         await signer.getAddress(),
         'Sign in with Ethereum to the app.'
     );
+
     const signature = await signer.signMessage(message);
     const form = document.createElement('form');
     form.method = 'post';
-    form.action = `${BACKEND_ADDR}/login`;
+    form.action = '/login';
 
     const messageField = document.createElement('input');
     messageField.type = 'hidden';
     messageField.name = 'message';
-    messageField.value = message;
+    messageField.value = window.btoa(message); // encode Base64
     form.appendChild(messageField);
 
     const signatureField = document.createElement('input');
     signatureField.type = 'hidden';
     signatureField.name = 'signature';
-    signatureField.value = signature;
+    signatureField.value = window.btoa(signature); // encode Base64
     form.appendChild(signatureField);
 
     document.body.appendChild(form);
+
+    // Set CSRF (CSRF is enabled by default in spring boot), otherwise request is rejected
+    const csrfField = document.createElement('input');
+    csrfField.type = 'hidden';
+    csrfField.name = '_csrf';
+    csrfField.value = document.querySelector("meta[name='_csrf']").getAttribute("content");
+    form.appendChild(csrfField);
+
     form.submit();
 }
 

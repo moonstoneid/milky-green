@@ -7,11 +7,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.Base64Utils;
+
+import java.util.Base64;
 
 public class MyAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String USERNAME_PARAMETER = "username";
-    private static final String PASSWORD_PARAMETER = "password";
+    private static final String MESSAGE_PARAMETER = "message";
+    private static final String SIGNATURE_PARAMETER = "signature";
+    private static final String NONCE_PARAMETER = "nonce";
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -23,12 +27,19 @@ public class MyAuthenticationFilter extends UsernamePasswordAuthenticationFilter
 
     private static UsernamePasswordAuthenticationToken extractAuthenticationRequest(
             HttpServletRequest request) {
-        String username = request.getParameter(USERNAME_PARAMETER);
-        username = username != null ? username : "";
-        username = username.trim();
-        String password = request.getParameter(PASSWORD_PARAMETER);
-        password = password != null ? password : "";
-        return new UsernamePasswordAuthenticationToken(username, password);
+        String[] credentials = new String[3];
+
+        String message = request.getParameter(MESSAGE_PARAMETER);
+        message = message != null ? new String(Base64Utils.decodeFromString(message)) : "";
+        credentials[0] = message;
+
+        String signature = request.getParameter(SIGNATURE_PARAMETER);
+        signature = signature != null ? new String(Base64Utils.decodeFromString(signature)) : "";
+        credentials[1] = signature;
+
+        credentials[2] = (String) request.getSession().getAttribute(NONCE_PARAMETER);
+
+        return new UsernamePasswordAuthenticationToken(null, credentials);
     }
 
 }

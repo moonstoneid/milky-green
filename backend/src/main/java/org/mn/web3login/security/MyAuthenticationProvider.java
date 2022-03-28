@@ -1,10 +1,8 @@
 package org.mn.web3login.security;
 
-import java.util.Objects;
-
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.mn.web3login.siwe.SiweMessage;
+import org.mn.web3login.siwe.error.SiweException;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,19 +22,51 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
+        String[] credentials = (String[]) authentication.getCredentials();
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        String message = credentials[0];
+        String signature = credentials[1];
+        String nonce = credentials[2];
 
-        if (userDetails == null) {
-            return null;
+        SiweMessage siweMessage = null;
+        UserDetails userDetails = null;
+        String address = null;
+
+        try {
+            // Try to parse the String. Throws an exception if message is not a valid EIP-4361 message.
+            siweMessage = new SiweMessage(message);
+            address = siweMessage.getMAddress();
+
+            // Throws UsernameNotFoundException
+            userDetails = userDetailsService.loadUserByUsername(address);
+
+            // Validate signature. Throws an exception if signature is invalid,
+            // mandatory fields are missing, expiration has been reached or now < notBefore
+            siweMessage.validate(signature);
+
+        } catch (SiweException e) {
+            switch (e.getMErrorType()) {
+                case INVALID_SIGNATURE:
+                    throw new BadCredentialsException("Invalid Credentials");
+                case EXPIRED_MESSAGE:
+                    throw new CredentialsExpiredException("expirationTime is in the past");
+                case MALFORMED_SESSION:
+                    throw new BadCredentialsException("Malformed session, some required fields are missing");
+                case MALFORMED_MESSAGE:
+                    throw new BadCredentialsException("Malformed message, some required fields are missing");
+                case NOTBEFORE_MESSAGE:
+                    throw new LockedException("Account is allowed to authenticate before "+ siweMessage.getMNotBefore());
+                default:
+                    throw new BadCredentialsException("Unknown credentials error");
+            }
         }
-        if (!Objects.equals(password, userDetails.getPassword())) {
-            throw new BadCredentialsException("Invalid Credentials");
+
+        // Check nonce
+        if(!nonce.equals(siweMessage.getMNonce())){
+            throw new BadCredentialsException("Invalid nonce");
         }
 
-        return new UsernamePasswordAuthenticationToken(username, password,
+        return new UsernamePasswordAuthenticationToken(address, signature,
                 userDetails.getAuthorities());
     }
 
@@ -46,3 +76,4 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
     }
 
 }
+
