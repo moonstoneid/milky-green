@@ -17,9 +17,9 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>backend</module>
-        <module>frontend</module>
         <module>lib</module>
+        <module>frontend</module>
+        <module>backend</module>
     </modules>
     <dependencyManagement>
         <dependencies>
