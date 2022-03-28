@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { SiweMessage } from 'siwe';
 declare var window: any
 
-const BACKEND_ADDR = "http://localhost:9000";
+
 const domain = window.location.host;
 const origin = window.location.origin;
 const ethereum = window.ethereum;
@@ -19,7 +19,7 @@ var signer:ethers.providers.JsonRpcSigner;
  * 
  */
 async function createSiweMessage(address:string, statement:string) {
-    const res = await fetch(`${BACKEND_ADDR}/nonce`, {
+    const res = await fetch('/nonce', {
         credentials: 'include',
     });
     const message = new SiweMessage({
@@ -49,7 +49,7 @@ async function signInWithEthereum() {
     const signature = await signer.signMessage(message);
     const form = document.createElement('form');
     form.method = 'post';
-    form.action = `${BACKEND_ADDR}/login`;
+    form.action = '/login';
 
     const messageField = document.createElement('input');
     messageField.type = 'hidden';
