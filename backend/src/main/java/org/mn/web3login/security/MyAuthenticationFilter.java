@@ -15,6 +15,7 @@ public class MyAuthenticationFilter extends UsernamePasswordAuthenticationFilter
 
     private static final String MESSAGE_PARAMETER = "message";
     private static final String SIGNATURE_PARAMETER = "signature";
+    private static final String NONCE_PARAMETER = "nonce";
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -26,11 +27,19 @@ public class MyAuthenticationFilter extends UsernamePasswordAuthenticationFilter
 
     private static UsernamePasswordAuthenticationToken extractAuthenticationRequest(
             HttpServletRequest request) {
+        String[] credentials = new String[3];
+
         String message = request.getParameter(MESSAGE_PARAMETER);
         message = message != null ? new String(Base64Utils.decodeFromString(message)) : "";
+        credentials[0] = message;
+
         String signature = request.getParameter(SIGNATURE_PARAMETER);
         signature = signature != null ? new String(Base64Utils.decodeFromString(signature)) : "";
-        return new UsernamePasswordAuthenticationToken(message, signature);
+        credentials[1] = signature;
+
+        credentials[2] = (String) request.getSession().getAttribute(NONCE_PARAMETER);
+
+        return new UsernamePasswordAuthenticationToken(null, credentials);
     }
 
 }

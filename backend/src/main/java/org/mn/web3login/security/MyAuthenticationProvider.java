@@ -22,8 +22,11 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String message = (String) authentication.getPrincipal();
-        String signature = (String) authentication.getCredentials();
+        String[] credentials = (String[]) authentication.getCredentials();
+
+        String message = credentials[0];
+        String signature = credentials[1];
+        String nonce = credentials[2];
 
         SiweMessage siweMessage = null;
         UserDetails userDetails = null;
@@ -56,6 +59,11 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
                 default:
                     throw new BadCredentialsException("Unknown credentials error");
             }
+        }
+
+        // Check nonce
+        if(!nonce.equals(siweMessage.getMNonce())){
+            throw new BadCredentialsException("Invalid nonce");
         }
 
         return new UsernamePasswordAuthenticationToken(address, signature,
