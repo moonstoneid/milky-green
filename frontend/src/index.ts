@@ -75,12 +75,32 @@ async function signInWithEthereum() {
     form.submit();
 }
 
+async function authorizeWithEthereum(evt: Event) {
+    // prevent default form submission of the browser
+    evt.preventDefault();
+
+    const oauthClientId = document.getElementById('oauthClientId').innerHTML;
+
+    // Create and sign message
+    let message = await createSiweMessage(
+        await signer.getAddress(),
+        'Authorize the following OAuth ClientID: ' + oauthClientId
+    );
+    const signature = await signer.signMessage(message);
+
+    (<HTMLInputElement>document.getElementById('siweMessage')).value = window.btoa(message);
+    (<HTMLInputElement>document.getElementById('siweSignature')).value = window.btoa(signature);
+
+    const form = (<HTMLFormElement>document.getElementById('consentForm'));
+    form.submit();
+}
+
 /**
  * Checks if MetaMask is installed. 
  * If true, it requests access to the MetaMask account.
  * 
  */
-function connectWallet() {
+async function connectWallet() {
     if (!ethereum) {
         let div = document.getElementById('errorDiv');
         div.innerHTML = 'You need to install MetaMask.'
@@ -91,15 +111,66 @@ function connectWallet() {
 
         return;    
     }
+
+    // Check chainId
+    provider = new ethers.providers.Web3Provider(ethereum);
+    let chainId = await getChainId(provider);
+    if(chainId != 1){
+        try {
+            // check if the chain to connect to is installed
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
+            });
+        } catch (error) {
+            return;
+        }
+    }
     
     // Connect wallet
-    provider = new ethers.providers.Web3Provider(ethereum);
     signer = provider.getSigner();
     provider.send('eth_requestAccounts', []).catch(() => console.log('user rejected request'));
 }
 
+/**
+* Returns the chainId currently set in MetaMask
+*
+*/
+async function getChainId(provider: ethers.providers.Web3Provider) {
+    const network = await provider.getNetwork();
+    const chainId = network.chainId;
+    return chainId;
+}
+
+/**
+* Trigger MetaMask popup to switch chain
+*/
+function switchChain(){
+    window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+            chainId: "0x89",
+            rpcUrls: ["https://rpc-mainnet.matic.network/"],
+            chainName: "Matic Mainnet",
+            nativeCurrency: {
+                name: "MATIC",
+                symbol: "MATIC",
+                decimals: 18
+            },
+            blockExplorerUrls: ["https://polygonscan.com/"]
+        }]
+    });
+}
+
 // Register events
-document.getElementById ('loginButton').addEventListener ("click", signInWithEthereum, false);
+var loginButton = document.getElementById('loginButton');
+loginButton && loginButton.addEventListener ("click", signInWithEthereum, false); // Add eventListener if element exists
+
+var consentApproveButton = document.getElementById('consentApproveButton');
+consentApproveButton && consentApproveButton.addEventListener('click', function(e) {authorizeWithEthereum(e);}, false);
+
+var consentDenyButton = document.getElementById('consentDenyButton');
+consentDenyButton && consentDenyButton.addEventListener('click', function(e) {authorizeWithEthereum(e);}, false);
 
 // Try to connect wallet on page load
 connectWallet();

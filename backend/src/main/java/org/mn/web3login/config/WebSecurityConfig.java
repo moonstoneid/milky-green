@@ -5,6 +5,7 @@ import javax.servlet.Filter;
 
 import org.mn.web3login.security.MyAuthenticationFilter;
 import org.mn.web3login.security.MyAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -83,6 +84,13 @@ public class WebSecurityConfig {
     @Order(3)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
+        private AuthorizationServerConfig authServerConfig;
+
+        @Autowired
+        public UserConfig(AuthorizationServerConfig authServerConfig){
+            this.authServerConfig = authServerConfig;
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
@@ -121,7 +129,9 @@ public class WebSecurityConfig {
 
         private AuthenticationProvider myAuthenticationProvider() {
             MyAuthenticationProvider provider = new MyAuthenticationProvider();
-            provider.setUserDetailsService(myUserDetailsService());
+            UserDetailsService userDetailService = myUserDetailsService();
+            provider.setUserDetailsService(userDetailService);
+            authServerConfig.setUserDetailsService(userDetailService);
             return provider;
         }
 
