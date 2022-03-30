@@ -8,6 +8,7 @@ import org.mn.web3login.security.MyAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -16,10 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -83,6 +82,12 @@ public class WebSecurityConfig {
     @Order(3)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
+        private final UserDetailsService userDetailsService;
+
+        public UserConfig(UserDetailsService userDetailsService) {
+            this.userDetailsService = userDetailsService;
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
@@ -100,7 +105,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // todo: replace filter
         }
 
-      private Filter myAuthenticationFilter() {
+        private Filter myAuthenticationFilter() {
             UsernamePasswordAuthenticationFilter filter = new MyAuthenticationFilter();
             filter.setAuthenticationManager(myAuthenticationManager());
             filter.setAuthenticationFailureHandler(myAuthenticationFailureHandler());
@@ -119,24 +124,19 @@ public class WebSecurityConfig {
             return new ProviderManager(providers);
         }
 
-        private AuthenticationProvider myAuthenticationProvider() {
+        private MyAuthenticationProvider myAuthenticationProvider() {
             MyAuthenticationProvider provider = new MyAuthenticationProvider();
-            provider.setUserDetailsService(myUserDetailsService());
+            provider.setUserDetailsService(userDetailsService);
             return provider;
         }
 
-        @Bean
-        public UserDetailsService myUserDetailsService() {
-            // Create new user and store it in a db
-            UserDetails user = User.builder()
-                    .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
-                    .password("")
-                    // .username("a")
-                    // .password("a")
-                    .roles("USER")
-                    .build();
-            return new InMemoryUserDetailsManager(user);
-        }
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
+        JdbcDaoImpl service = new JdbcDaoImpl();
+        service.setJdbcTemplate(jdbcTemplate);
+        return service;
     }
 
 }
