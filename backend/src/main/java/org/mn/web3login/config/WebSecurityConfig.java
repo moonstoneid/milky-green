@@ -3,8 +3,8 @@ package org.mn.web3login.config;
 import java.util.ArrayList;
 import javax.servlet.Filter;
 
-import org.mn.web3login.security.MyAuthenticationFilter;
-import org.mn.web3login.security.MyAuthenticationProvider;
+import org.mn.web3login.security.Web3AuthenticationFilter;
+import org.mn.web3login.security.Web3AuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -102,30 +102,30 @@ public class WebSecurityConfig {
                 .logout()
                     .permitAll()
                     .and()
-                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // todo: replace filter
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
-        private Filter myAuthenticationFilter() {
-            UsernamePasswordAuthenticationFilter filter = new MyAuthenticationFilter();
-            filter.setAuthenticationManager(myAuthenticationManager());
-            filter.setAuthenticationFailureHandler(myAuthenticationFailureHandler());
+        private Filter authenticationFilter() {
+            Web3AuthenticationFilter filter = new Web3AuthenticationFilter("/login");
+            filter.setAuthenticationManager(web3AuthenticationManager());
+            filter.setAuthenticationFailureHandler(web3AuthenticationFailureHandler());
             return filter;
         }
 
-        private AuthenticationFailureHandler myAuthenticationFailureHandler() {
+        private AuthenticationFailureHandler web3AuthenticationFailureHandler() {
             SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
             handler.setDefaultFailureUrl("/login?error");
             return handler;
         }
 
-        private AuthenticationManager myAuthenticationManager() {
+        private AuthenticationManager web3AuthenticationManager() {
             ArrayList<AuthenticationProvider> providers = new ArrayList<>();
-            providers.add(myAuthenticationProvider());
+            providers.add(web3AuthenticationProvider());
             return new ProviderManager(providers);
         }
 
-        private MyAuthenticationProvider myAuthenticationProvider() {
-            MyAuthenticationProvider provider = new MyAuthenticationProvider();
+        private Web3AuthenticationProvider web3AuthenticationProvider() {
+            Web3AuthenticationProvider provider = new Web3AuthenticationProvider();
             provider.setUserDetailsService(userDetailsService);
             return provider;
         }
