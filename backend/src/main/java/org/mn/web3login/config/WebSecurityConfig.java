@@ -131,22 +131,20 @@ public class WebSecurityConfig {
             MyAuthenticationProvider provider = new MyAuthenticationProvider();
             UserDetailsService userDetailService = myUserDetailsService();
             provider.setUserDetailsService(userDetailService);
-            authServerConfig.setUserDetailsService(userDetailService);
             return provider;
-        }
-
-        @Bean
-        public UserDetailsService myUserDetailsService() {
-            // Create new user and store it in a db
-            UserDetails user = User.builder()
-                    .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
-                    .password("")
-                    // .username("a")
-                    // .password("a")
-                    .roles("USER")
-                    .build();
-            return new InMemoryUserDetailsManager(user);
         }
     }
 
+    @Bean
+    public static UserDetailsService myUserDetailsService() {
+        // Create new user and store it in a db
+        UserDetails user = User.builder()
+                .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
+                .password("")
+                // .username("a")
+                // .password("a")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
 }

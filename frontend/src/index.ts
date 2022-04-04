@@ -142,25 +142,6 @@ async function getChainId(provider: ethers.providers.Web3Provider) {
     return chainId;
 }
 
-/**
-* Trigger MetaMask popup to switch chain
-*/
-function switchChain(){
-    window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [{
-            chainId: "0x89",
-            rpcUrls: ["https://rpc-mainnet.matic.network/"],
-            chainName: "Matic Mainnet",
-            nativeCurrency: {
-                name: "MATIC",
-                symbol: "MATIC",
-                decimals: 18
-            },
-            blockExplorerUrls: ["https://polygonscan.com/"]
-        }]
-    });
-}
 
 // Register events
 var loginButton = document.getElementById('loginButton');
