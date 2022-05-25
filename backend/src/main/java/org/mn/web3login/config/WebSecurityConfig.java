@@ -3,11 +3,12 @@ package org.mn.web3login.config;
 import java.util.ArrayList;
 import javax.servlet.Filter;
 
-import org.mn.web3login.security.MyAuthenticationFilter;
-import org.mn.web3login.security.MyAuthenticationProvider;
+import org.mn.web3login.security.Web3AuthenticationFilter;
+import org.mn.web3login.security.Web3AuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -16,10 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -83,6 +82,12 @@ public class WebSecurityConfig {
     @Order(3)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
+        private final UserDetailsService userDetailsService;
+
+        public UserConfig(UserDetailsService userDetailsService) {
+            this.userDetailsService = userDetailsService;
+        }
+
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
@@ -97,46 +102,41 @@ public class WebSecurityConfig {
                 .logout()
                     .permitAll()
                     .and()
-                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // todo: replace filter
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
-      private Filter myAuthenticationFilter() {
-            UsernamePasswordAuthenticationFilter filter = new MyAuthenticationFilter();
-            filter.setAuthenticationManager(myAuthenticationManager());
-            filter.setAuthenticationFailureHandler(myAuthenticationFailureHandler());
+        private Filter authenticationFilter() {
+            Web3AuthenticationFilter filter = new Web3AuthenticationFilter("/login");
+            filter.setAuthenticationManager(web3AuthenticationManager());
+            filter.setAuthenticationFailureHandler(web3AuthenticationFailureHandler());
             return filter;
         }
 
-        private AuthenticationFailureHandler myAuthenticationFailureHandler() {
+        private AuthenticationFailureHandler web3AuthenticationFailureHandler() {
             SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
             handler.setDefaultFailureUrl("/login?error");
             return handler;
         }
 
-        private AuthenticationManager myAuthenticationManager() {
+        private AuthenticationManager web3AuthenticationManager() {
             ArrayList<AuthenticationProvider> providers = new ArrayList<>();
-            providers.add(myAuthenticationProvider());
+            providers.add(web3AuthenticationProvider());
             return new ProviderManager(providers);
         }
 
-        private AuthenticationProvider myAuthenticationProvider() {
-            MyAuthenticationProvider provider = new MyAuthenticationProvider();
-            provider.setUserDetailsService(myUserDetailsService());
+        private Web3AuthenticationProvider web3AuthenticationProvider() {
+            Web3AuthenticationProvider provider = new Web3AuthenticationProvider();
+            provider.setUserDetailsService(userDetailsService);
             return provider;
         }
 
-        @Bean
-        public UserDetailsService myUserDetailsService() {
-            // Create new user and store it in a db
-            UserDetails user = User.builder()
-                    .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
-                    .password("")
-                    // .username("a")
-                    // .password("a")
-                    .roles("USER")
-                    .build();
-            return new InMemoryUserDetailsManager(user);
-        }
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
+        JdbcDaoImpl service = new JdbcDaoImpl();
+        service.setJdbcTemplate(jdbcTemplate);
+        return service;
     }
 
 }
