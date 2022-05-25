@@ -31,7 +31,8 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         
         Web3Credentials credentials = web3Authentication.getCredentials();
 
-        // Try to parse the message. Throws an exception if message is not a valid EIP-4361 message.
+        // Try to parse the message
+        // Throws an exception if message is not a valid EIP-4361 message.
         SiweMessage siweMessage = null;
         try {
             siweMessage = new SiweMessage(credentials.getMessage());
@@ -44,8 +45,9 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         // Throws UsernameNotFoundException
         UserDetails userDetails = userDetailsService.loadUserByUsername(address);
 
-        // Try to validate signature. Throws an exception if signature is invalid, mandatory fields
-        // are missing, expiration has been reached or now < notBefore
+        // Try to validate signature
+        // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
+        // been reached or now < notBefore
         try {
             siweMessage.validate(credentials.getSignature());
         } catch (SiweException e) {
@@ -53,12 +55,11 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
                 case INVALID_SIGNATURE:
                     throw new BadCredentialsException("Invalid signature!");
                 case EXPIRED_MESSAGE:
-                    throw new CredentialsExpiredException("Expiration time is in the past!");
+                    throw new CredentialsExpiredException("Message is already expired!");
                 case MALFORMED_SESSION:
                     throw new BadCredentialsException("Malformed session!");
                 case NOTBEFORE_MESSAGE:
-                    throw new LockedException("Account is allowed to authenticate before: " +
-                            siweMessage.getMNotBefore());
+                    throw new LockedException("Message not valid yet!");
                 default:
                     throw new BadCredentialsException("Unknown credentials error!");
             }
@@ -80,4 +81,3 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
     }
 
 }
-

@@ -8,16 +8,18 @@
   <h1>Consent required</h1>
   <p>
     The application
-    <span th:text="${clientId}"></span>
+    <span id="oauthClientId" th:text="${clientId}"></span>
     wants to access your account
     <span th:text="${principalName}"></span>
     .
   </p>
   <p>The following permissions are requested by the above app.<br/>Please review these and consent
     if you approve.</p>
-  <form method="post" action="/oauth2/authorize">
+  <form method="post" action="/oauth2/authorize" id="consentForm">
     <input type="hidden" name="client_id" th:value="${clientId}">
     <input type="hidden" name="state" th:value="${state}">
+    <input type="hidden" name="message" id="siweMessage">
+    <input type="hidden" name="signature" id="siweSignature">
 
     <div th:each="scope: ${scopes}">
       <input type="checkbox"
@@ -40,8 +42,9 @@
       <p th:text="${scope.description}"></p>
     </div>
 
-    <button type="submit" name="consent_action" value="approve">Submit Consent</button>
-    <button type="submit" name="consent_action" value="cancel">Cancel</button>
+    <button type="submit" id="consentApproveButton" name="consent_action" value="approve">Submit Consent</button>
+    <button type="submit" id="consentDenyButton" name="consent_action" value="cancel">Cancel</button>
   </form>
+  <script type="text/javascript" th:src="@{../js/bundle.js}"></script>
 </body>
 </html>

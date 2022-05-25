@@ -5,11 +5,13 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.mn.web3login.jose.Jwks;
+import org.mn.web3login.security.Web3AuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -17,17 +19,31 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.web.authentication.AuthenticationConverter;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 public class AuthorizationServerConfig {
+
+    private final UserDetailsService userDetailsService;
+
+    public AuthorizationServerConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer() {
-        OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
+        OAuth2AuthorizationServerConfigurer<HttpSecurity> configurer =
                 new OAuth2AuthorizationServerConfigurer<>();
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint ->
-                authorizationEndpoint.consentPage("/oauth2/consent"));
-        return authorizationServerConfigurer;
+        configurer.authorizationEndpoint(authEndpoint -> authEndpoint
+                .authorizationRequestConverter(authenticationConverter())
+                .consentPage("/oauth2/consent"));
+        return configurer;
+    }
+
+    public AuthenticationConverter authenticationConverter() {
+        Web3AuthenticationConverter converter = new Web3AuthenticationConverter();
+        converter.setUserDetailsService(userDetailsService);
+        return converter;
     }
 
     @Bean
