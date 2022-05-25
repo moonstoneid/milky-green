@@ -115,17 +115,17 @@ async function connectWallet() {
     // Check chainId
     provider = new ethers.providers.Web3Provider(ethereum);
     let chainId = await getChainId(provider);
-    if(chainId != 1){
-        try {
-            // check if the chain to connect to is installed
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
-            });
-        } catch (error) {
-            return;
-        }
-    }
+    // if(chainId != 1){
+    //     try {
+    //         // check if the chain to connect to is installed
+    //         await window.ethereum.request({
+    //             method: 'wallet_switchEthereumChain',
+    //             params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
+    //         });
+    //     } catch (error) {
+    //         return;
+    //     }
+    // }
     
     // Connect wallet
     signer = provider.getSigner();

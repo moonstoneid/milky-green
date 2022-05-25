@@ -1,15 +1,16 @@
-package org.mn.web3login.util;
-
-import org.springframework.util.Base64Utils;
+package org.mn.web3login.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ParamUtil {
+import org.springframework.util.Base64Utils;
+
+public class MyCredentialsExtractor {
+
     private static final String MESSAGE_PARAMETER = "message";
     private static final String SIGNATURE_PARAMETER = "signature";
     private static final String NONCE_PARAMETER = "nonce";
 
-    public static String[] parseCredentialsFromRequest(HttpServletRequest request){
+    public static String[] extractCredentials(HttpServletRequest request){
         String[] credentials = new String[3];
 
         String message = request.getParameter(MESSAGE_PARAMETER);

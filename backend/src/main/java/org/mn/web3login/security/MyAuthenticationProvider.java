@@ -28,41 +28,42 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         String signature = credentials[1];
         String nonce = credentials[2];
 
-        SiweMessage siweMessage = null;
-        UserDetails userDetails = null;
-        String address = null;
+        SiweMessage siweMessage;
+        UserDetails userDetails;
+        String address;
 
         try {
-            // Try to parse the String. Throws an exception if message is not a valid EIP-4361 message.
+            // Try to parse the String
+            // Throws an exception if message is not a valid EIP-4361 message.
             siweMessage = new SiweMessage(message);
             address = siweMessage.getMAddress();
 
             // Throws UsernameNotFoundException
             userDetails = userDetailsService.loadUserByUsername(address);
 
-            // Validate signature. Throws an exception if signature is invalid,
-            // mandatory fields are missing, expiration has been reached or now < notBefore
+            // Validate signature
+            // Throws an exception if signature is invalid mandatory fields are missing,
+            // expiration has been reached or now < notBefore
             siweMessage.validate(signature);
-
         } catch (SiweException e) {
             switch (e.getMErrorType()) {
                 case INVALID_SIGNATURE:
-                    throw new BadCredentialsException("Invalid Credentials");
+                    throw new BadCredentialsException("Invalid credentials");
                 case EXPIRED_MESSAGE:
-                    throw new CredentialsExpiredException("expirationTime is in the past");
+                    throw new CredentialsExpiredException("Message is already expired");
                 case MALFORMED_SESSION:
                     throw new BadCredentialsException("Malformed session, some required fields are missing");
                 case MALFORMED_MESSAGE:
                     throw new BadCredentialsException("Malformed message, some required fields are missing");
                 case NOTBEFORE_MESSAGE:
-                    throw new LockedException("Account is allowed to authenticate before "+ siweMessage.getMNotBefore());
+                    throw new LockedException("Message not valid yet");
                 default:
                     throw new BadCredentialsException("Unknown credentials error");
             }
         }
 
         // Check nonce
-        if(!nonce.equals(siweMessage.getMNonce())){
+        if (!nonce.equals(siweMessage.getMNonce())) {
             throw new BadCredentialsException("Invalid nonce");
         }
 
@@ -76,4 +77,3 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
     }
 
 }
-

@@ -5,7 +5,6 @@ import javax.servlet.Filter;
 
 import org.mn.web3login.security.MyAuthenticationFilter;
 import org.mn.web3login.security.MyAuthenticationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -84,11 +83,10 @@ public class WebSecurityConfig {
     @Order(3)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
-        private AuthorizationServerConfig authServerConfig;
+        private final UserDetailsService userDetailsService;
 
-        @Autowired
-        public UserConfig(AuthorizationServerConfig authServerConfig){
-            this.authServerConfig = authServerConfig;
+        public UserConfig(UserDetailsService userDetailsService) {
+            this.userDetailsService = userDetailsService;
         }
 
         @Override
@@ -105,10 +103,10 @@ public class WebSecurityConfig {
                 .logout()
                     .permitAll()
                     .and()
-                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // todo: replace filter
+                .addFilterBefore(myAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
-      private Filter myAuthenticationFilter() {
+        private Filter myAuthenticationFilter() {
             UsernamePasswordAuthenticationFilter filter = new MyAuthenticationFilter();
             filter.setAuthenticationManager(myAuthenticationManager());
             filter.setAuthenticationFailureHandler(myAuthenticationFailureHandler());
@@ -129,22 +127,23 @@ public class WebSecurityConfig {
 
         private AuthenticationProvider myAuthenticationProvider() {
             MyAuthenticationProvider provider = new MyAuthenticationProvider();
-            UserDetailsService userDetailService = myUserDetailsService();
-            provider.setUserDetailsService(userDetailService);
+            provider.setUserDetailsService(userDetailsService);
             return provider;
         }
+
     }
 
     @Bean
-    public static UserDetailsService myUserDetailsService() {
+    public UserDetailsService myUserDetailsService() {
         // Create new user and store it in a db
         UserDetails user = User.builder()
                 .username("0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB")
                 .password("")
-                // .username("a")
-                // .password("a")
+                // .username("user1")
+                // .password("password1")
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
     }
+
 }
