@@ -2,16 +2,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="https://www.thymeleaf.org">
 <head>
-  <title>Login</title>
+    <meta charset="UTF-8">
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Gimme your signature, baby ;-)</title>
 </head>
 <body>
-  <h1>Login</h1>
-  <div th:if="${param.error}">Invalid username and password.</div>
-  <div th:if="${param.logout}">You have been logged out.</div>
-  <form th:action="@{/login}" method="post">
-    <div><label>Username: <input type="text" name="username"/></label></div>
-    <div><label>Password: <input type="password" name="password"/></label></div>
-    <div><input type="submit" value="Login"/></div>
-  </form>
+    <h1>Login</h1>
+    <div th:if="${param.error}">Invalid username and password.</div>
+    <div th:if="${param.logout}">You have been logged out.</div>
+    <div id="errorDiv" style="visibility: hidden"></div>
+    <input type="button" id="loginButton" value="Login with MetaMask" />
+    <script type="text/javascript" th:src="@{js/bundle.js}"></script>
 </body>
 </html>
