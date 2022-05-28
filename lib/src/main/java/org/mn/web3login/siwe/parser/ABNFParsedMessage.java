@@ -104,7 +104,6 @@ public class ABNFParsedMessage {
         try {
             ast.enableRuleNode(SiweGrammar.RuleNames.SIGN_IN_WITH_ETHEREUM.ruleID(), true);
             ast.enableRuleNode(SiweGrammar.RuleNames.DOMAIN.ruleID(), true);
-            ast.enableRuleNode(SiweGrammar.RuleNames.DOMAIN.ruleID(), true);
             ast.enableRuleNode(SiweGrammar.RuleNames.ADDRESS.ruleID(), true);
             ast.enableRuleNode(SiweGrammar.RuleNames.STATEMENT.ruleID(), true);
             ast.enableRuleNode(SiweGrammar.RuleNames.URI.ruleID(), true);
@@ -154,7 +153,7 @@ public class ABNFParsedMessage {
     }
 
     class AstTranslator extends Ast.AstCallback {
-        private String mNodeName;
+        private final String mNodeName;
 
         AstTranslator(Ast ast, String name) {
             super(ast);
@@ -162,24 +161,12 @@ public class ABNFParsedMessage {
         }
 
         @Override
-        public void postBranch(int offset, int length) {
+        public boolean preBranch(int offset, int length) {
             String input = new String(callbackData.inputString);
             String substring = input.substring(offset, offset + length);
             int maxLength = substring.length();
 
-            boolean isResource = false;
-            try {
-                // Check if String starts with - to determine if it is a resource
-                String val = input.substring(offset - 2, offset + length);
-                if (val.startsWith("-")) {
-                    isResource = true;
-                }
-            } catch (StringIndexOutOfBoundsException e) {
-                isResource = false;
-            }
-
             String value = Utilities.charArrayToString(callbackData.inputString, offset, length, maxLength);
-
             switch (SiweGrammar.RuleNames.valueOf(mNodeName)) {
                 case DOMAIN:
                     mDomain = value;
@@ -191,10 +178,7 @@ public class ABNFParsedMessage {
                     mStatement = value;
                     break;
                 case URI:
-                    // Dirty hack to know if the URI is a resource or the URI
-                    if (!isResource) {
-                        mUri = value;
-                    }
+                    mUri = value;
                     break;
                 case VERSION:
                     mVersion = value;
@@ -218,16 +202,22 @@ public class ABNFParsedMessage {
                     mChainId = Integer.parseInt(value);
                     break;
                 case RESOURCES:
+                    // Split resources by \n
                     String[] tmp =
                             Arrays.stream(substring.split("\n")).filter(x -> !x.isEmpty()).toArray(String[]::new);
-                    List<String> tmp2 =
-                            Arrays.asList(tmp).stream().map(s -> s.replace("- ", "")).collect(Collectors.toList());
-                    mResources = tmp2.toArray(new String[0]);
+                    // Remove "- " at the beginning of each resource
+                    mResources = Arrays.stream(tmp).map(s -> s.replace("- ", "")).collect(Collectors.toList()).toArray(new String[0]);
                     break;
                 default:
                     break;
             }
+            return true;
+        }
+
+        @Override
+        public void postBranch(int offset, int length) {
         }
     }
 
 }
+
