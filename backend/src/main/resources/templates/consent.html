@@ -2,49 +2,58 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="https://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
   <title>Consent</title>
 </head>
 <body>
   <h1>Consent required</h1>
-  <p>
-    The application
-    <span id="oauthClientId" th:text="${clientId}"></span>
-    wants to access your account
-    <span th:text="${principalName}"></span>
-    .
-  </p>
-  <p>The following permissions are requested by the above app.<br/>Please review these and consent
-    if you approve.</p>
-  <form method="post" action="/oauth2/authorize" id="consentForm">
-    <input type="hidden" name="client_id" th:value="${clientId}">
-    <input type="hidden" name="state" th:value="${state}">
-    <input type="hidden" name="message" id="siweMessage">
-    <input type="hidden" name="signature" id="siweSignature">
+  <div id="errorDiv" style="display: none"></div>
+  <button id="connectWalletButton" style="display: none">Connect Wallet</button>
+  <div id="contentDiv" style="display: none">
+    <p>
+      The application
+      <span id="oauthClientId" th:text="${clientId}"></span>
+      wants to access your account
+      <span th:text="${principalName}"></span>
+      .
+    </p>
+    <p>
+      The following permissions are requested by the above app.<br/>Please review these and consent
+      if you approve.
+    </p>
+    <form method="post" action="/oauth2/authorize" id="consentForm">
+      <input name="client_id" type="hidden" th:value="${clientId}">
+      <input name="state" type="hidden" th:value="${state}">
+      <input name="message" type="hidden" id="siweMessage">
+      <input name="signature" type="hidden" id="siweSignature">
 
-    <div th:each="scope: ${scopes}">
-      <input type="checkbox"
-             name="scope"
-             th:value="${scope.scope}"
-             th:id="${scope.scope}"
-             checked>
-      <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-      <p th:text="${scope.description}"></p>
-    </div>
+      <div th:each="scope: ${scopes}">
+        <input name="scope"
+               type="checkbox"
+               th:id="${scope.scope}"
+               th:value="${scope.scope}"
+               checked>
+        <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+        <p th:text="${scope.description}"></p>
+      </div>
 
-    <p th:if="${not #lists.isEmpty(previouslyApprovedScopes)}">You have already granted the
-      following permissions to the above app:</p>
-    <div th:each="scope: ${previouslyApprovedScopes}">
-      <input type="checkbox"
-             th:id="${scope.scope}"
-             disabled
-             checked>
-      <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-      <p th:text="${scope.description}"></p>
-    </div>
+      <p th:if="${not #lists.isEmpty(previouslyApprovedScopes)}">
+        You have already granted the following permissions to the above app:
+      </p>
+      <div th:each="scope: ${previouslyApprovedScopes}">
+        <input name="approved_scope"
+               type="checkbox"
+               th:id="${scope.scope}"
+               disabled
+               checked>
+        <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+        <p th:text="${scope.description}"></p>
+      </div>
 
-    <button type="submit" id="consentApproveButton" name="consent_action" value="approve">Submit Consent</button>
-    <button type="submit" id="consentDenyButton" name="consent_action" value="cancel">Cancel</button>
-  </form>
-  <script type="text/javascript" th:src="@{../js/bundle.js}"></script>
+      <button type="submit" id="consentApproveButton" name="consent_action" value="approve">Submit Consent</button>
+      <button type="submit" id="consentDenyButton" name="consent_action" value="cancel">Cancel</button>
+    </form>
+  </div>
+  <script type="text/javascript" th:src="@{../js/bundle_consent.js}"></script>
 </body>
 </html>

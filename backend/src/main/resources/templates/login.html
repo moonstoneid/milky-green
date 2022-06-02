@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="https://www.thymeleaf.org">
+  xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta th:name="_csrf" th:content="${_csrf.token}"/>
-    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Gimme your signature, baby ;-)</title>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta th:name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
-    <h1>Login</h1>
-    <div th:if="${param.error}">Invalid username and password.</div>
-    <div th:if="${param.logout}">You have been logged out.</div>
-    <div id="errorDiv" style="visibility: hidden"></div>
-    <input type="button" id="loginButton" value="Login with MetaMask" />
-    <script type="text/javascript" th:src="@{js/bundle.js}"></script>
+  <h1>Login</h1>
+  <div th:if="${param.error}">Invalid username and password.</div>
+  <div th:if="${param.logout}">You have been logged out.</div>
+  <div id="errorDiv" style="display: none"></div>
+  <button id="connectWalletButton" style="display: none">Connect Wallet</button>
+  <div id="contentDiv" style="display: none">
+    <form method="post" action="/login" id="loginForm">
+      <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+      <input type="hidden" name="_csrf_header" th:value="${_csrf.headerName}">
+      <input type="hidden" name="message" id="siweMessage">
+      <input type="hidden" name="signature" id="siweSignature">
+
+      <button type="submit" id="loginButton" name="login_action">Login</button>
+    </form>
+  </div>
+  <script type="text/javascript" th:src="@{js/bundle_login.js}"></script>
 </body>
 </html>
