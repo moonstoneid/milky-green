@@ -6,13 +6,28 @@
     <meta th:name="_csrf" th:content="${_csrf.token}"/>
     <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>Gimme your signature, baby ;-)</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
-<body>
-    <h1>Login</h1>
-    <div th:if="${param.error}">Invalid username and password.</div>
-    <div th:if="${param.logout}">You have been logged out.</div>
+<body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
+    <div>
+        <img class="mb-4" th:src="@{/img/ethereum.svg}" alt="Ethereum logo" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h1>
+        <div th:if= "${param.logout == null && param.error == null }">
+            <p class="mt-5 mb-3 text-muted">Connecting to Metamask and waiting for signature...</p>
+            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
+        </div>
+        <div th:if="${param.error}">
+            <p class="mt-5 mb-3 text-muted">Invalid username or password.</p>
+            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
+        </div>
+        <div th:if="${param.logout}">
+            <p class="mt-5 mb-3 text-muted">You have been logged out.</p>
+            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
+        </div>
+    </div>
     <div id="errorDiv" style="visibility: hidden"></div>
-    <input type="button" id="loginButton" value="Login with MetaMask" />
     <script type="text/javascript" th:src="@{js/bundle.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 </html>

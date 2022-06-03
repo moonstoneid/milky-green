@@ -35,7 +35,7 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                    .antMatchers("/res/**", "/js/**")
+                    .antMatchers("/res/**", "/js/**", "/webjars/**", "/css/**", "/img/**")
                     .and()
                 .authorizeRequests()
                     .anyRequest().permitAll()
