@@ -6,10 +6,10 @@
     Java APG Version 1.1.0 may be used under the terms of the 2-Clause BSD License.
     
 *   ******************************************************************************/
-package org.mn.web3login.siwe.parser.apg;
+package org.mn.web3login.siwe.grammar.apg;
 
-import org.mn.web3login.siwe.parser.apg.GeneratorSyntax.SyntaxOpcode;
-import org.mn.web3login.siwe.parser.apg.GeneratorSyntax.SyntaxRule;
+import org.mn.web3login.siwe.grammar.apg.GeneratorSyntax.SyntaxOpcode;
+import org.mn.web3login.siwe.grammar.apg.GeneratorSyntax.SyntaxRule;
 
 import java.util.*;
 

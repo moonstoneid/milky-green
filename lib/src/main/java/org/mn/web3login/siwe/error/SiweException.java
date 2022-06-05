@@ -1,6 +1,7 @@
 package org.mn.web3login.siwe.error;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 /**
  * Signals an error while working with Siwe messages
@@ -9,7 +10,7 @@ public class SiweException extends Exception {
 
     private static final long serialVersionUID = 2642720416433996541L;
 
-    @Getter
+    @Accessors(prefix = "m") @Getter
     private ErrorTypes mErrorType;
 
     /**

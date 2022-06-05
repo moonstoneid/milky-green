@@ -3,7 +3,7 @@
 // Copyright (c) 2021 Lowell D. Thomas, all rights reserved.
 // Licensed under the 2-Clause BSD License.
 
-package org.mn.web3login.siwe.parser.apg;
+package org.mn.web3login.siwe.grammar.apg;
 
 import java.io.PrintStream;
 

@@ -6,8 +6,8 @@
     Java APG Version 1.1.0 may be used under the terms of the 2-Clause BSD License.
     
 *   ******************************************************************************/
-package org.mn.web3login.siwe.parser.apg;
-import org.mn.web3login.siwe.parser.apg.Opcode.Type;
+package org.mn.web3login.siwe.grammar.apg;
+import org.mn.web3login.siwe.grammar.apg.Opcode.Type;
 
 /**
  * The Grammar class is the interface between the Parser Generator and the

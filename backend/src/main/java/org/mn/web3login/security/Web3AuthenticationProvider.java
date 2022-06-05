@@ -1,7 +1,5 @@
 package org.mn.web3login.security;
 
-import java.util.Objects;
-
 import org.mn.web3login.siwe.SiweMessage;
 import org.mn.web3login.siwe.error.SiweException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -28,20 +26,20 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Web3AuthenticationToken web3Authentication = (Web3AuthenticationToken) authentication;
-        
         Web3Credentials credentials = web3Authentication.getCredentials();
+        String domain = credentials.getDomain();
 
         // Try to parse the message
         // Throws an exception if message is not a valid EIP-4361 message.
         SiweMessage siweMessage = null;
         try {
-            siweMessage = new SiweMessage(credentials.getMessage());
+            siweMessage = new SiweMessage.Parser().parse(credentials.getMessage());
         } catch (SiweException e) {
             throw new BadCredentialsException("Malformed message!");
         }
 
-        String address = siweMessage.getMAddress();
-        
+        String address = siweMessage.getAddress();
+
         // Throws UsernameNotFoundException
         UserDetails userDetails = userDetailsService.loadUserByUsername(address);
 
@@ -49,29 +47,26 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
         // been reached or now < notBefore
         try {
-            siweMessage.validate(credentials.getSignature());
+            // TODO: fix domain check
+            siweMessage.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
         } catch (SiweException e) {
-            switch (e.getMErrorType()) {
-                case INVALID_SIGNATURE:
-                    throw new BadCredentialsException("Invalid signature!");
+            switch (e.getErrorType()) {
+                case DOMAIN_MISMATCH:
+                    throw new BadCredentialsException("Domain does not match!");
+                case NONCE_MISMATCH:
+                    throw new CredentialsExpiredException("Nonce does not match!");
                 case EXPIRED_MESSAGE:
-                    throw new CredentialsExpiredException("Message is already expired!");
-                case MALFORMED_SESSION:
-                    throw new BadCredentialsException("Malformed session!");
-                case NOTBEFORE_MESSAGE:
+                    throw new BadCredentialsException("Message expired!");
+                case NOT_YET_VALID_MESSAGE:
                     throw new LockedException("Message not valid yet!");
+                case INVALID_SIGNATURE:
+                    throw new BadCredentialsException("Invalid signature");
                 default:
                     throw new BadCredentialsException("Unknown credentials error!");
             }
         }
 
-        // Check nonce
-        if (!Objects.equals(credentials.getNonce(), siweMessage.getMNonce())) {
-            throw new BadCredentialsException("Invalid nonce");
-        }
-
         Web3Principal principal = new Web3Principal(address, userDetails);
-
         return new Web3AuthenticationToken(principal, credentials, userDetails.getAuthorities());
     }
 
