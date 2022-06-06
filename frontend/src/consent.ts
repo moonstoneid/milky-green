@@ -1,4 +1,12 @@
-import {signer, connectWallet, getNonce, createMessage} from './base';
+import {signer, connectWallet} from './base';
+
+async function createConsentMessage(chainId: Number, address: String, clientId: String): Promise<string> {
+    const query = 'chain_id=' + chainId + '&address=' + address + '&client_id=' + clientId ;
+    const res = await fetch('/consent-message?' + query, {
+        credentials: 'include',
+    });
+    return await res.text();
+}
 
 async function authorizeWithEthereum(evt: Event): Promise<void> {
     // Prevent default form submission of the browser
@@ -6,13 +14,9 @@ async function authorizeWithEthereum(evt: Event): Promise<void> {
 
     const oauthClientId = document.getElementById('oauthClientId').innerHTML;
 
-    // Get message contents
-    let address = await signer.getAddress();
-    let statement = 'Authorize the following OAuth ClientID: ' + oauthClientId
-    let nonce = await getNonce();
-
     // Create and sign message
-    const message = await createMessage(address, statement, nonce);
+    let address = await signer.getAddress();
+    const message = await createConsentMessage(1, address, oauthClientId);
     const signature = await signer.signMessage(message);
 
     (<HTMLInputElement> document.getElementById('siweMessage')).value = window.btoa(message);

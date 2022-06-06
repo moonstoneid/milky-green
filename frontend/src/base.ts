@@ -1,11 +1,8 @@
 import { ethers } from 'ethers';
-import { SiweMessage } from 'siwe';
 
 declare var window: any
 
 const ethereum = window.ethereum;
-const domain = window.location.host;
-const origin = window.location.origin;
 
 let signer: ethers.providers.JsonRpcSigner;
 
@@ -58,24 +55,4 @@ function showContent() {
     div.style.display = 'block';
 }
 
-async function getNonce(): Promise<string> {
-    const res = await fetch('/nonce', {
-        credentials: 'include',
-    });
-    return await res.text();
-}
-
-async function createMessage(address: string, statement: string, nonce: string): Promise<string> {
-    const message = new SiweMessage({
-        domain: domain,
-        address: address,
-        statement: statement,
-        uri: origin,
-        version: '1',
-        chainId: 1,
-        nonce: nonce
-    });
-    return message.prepareMessage();
-}
-
-export {signer, connectWallet, getNonce, createMessage}
+export {signer, connectWallet}

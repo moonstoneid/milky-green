@@ -1,16 +1,20 @@
-import {signer, connectWallet, getNonce, createMessage} from './base';
+import {signer, connectWallet} from './base';
 
-async function signInWithEthereum(evt: Event): Promise<void> {
+async function createLoginMessage(chainId: Number, address: String): Promise<string> {
+    const query = 'chain_id=' + chainId + '&address=' + address;
+    const res = await fetch('/login-message?' + query, {
+        credentials: 'include',
+    });
+    return await res.text();
+}
+
+async function loginInWithEthereum(evt: Event): Promise<void> {
     // Prevent default form submission of the browser
     evt.preventDefault();
 
-    // Get message contents
-    let address = await signer.getAddress();
-    let statement = 'Sign in with Ethereum to the app.';
-    let nonce = await getNonce();
-
     // Create and sign message
-    const message = await createMessage(address, statement, nonce);
+    let address = await signer.getAddress();
+    const message = await createLoginMessage(1, address);
     const signature = await signer.signMessage(message);
 
     (<HTMLInputElement> document.getElementById('siweMessage')).value = window.btoa(message);
@@ -25,7 +29,7 @@ connectWalletButton && connectWalletButton.addEventListener('click', connectWall
 
 const loginButton = document.getElementById('loginButton');
 loginButton && loginButton.addEventListener('click',
-    function(e: MouseEvent) {signInWithEthereum(e);},
+    function(e: MouseEvent) {loginInWithEthereum(e);},
     false);
 
 // Try to connect wallet on page load
