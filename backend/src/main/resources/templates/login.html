@@ -19,10 +19,43 @@
       <input type="hidden" name="_csrf_header" th:value="${_csrf.headerName}">
       <input type="hidden" name="message" id="siweMessage">
       <input type="hidden" name="signature" id="siweSignature">
-
       <button type="submit" id="loginButton" name="login_action">Login</button>
     </form>
   </div>
-  <script type="text/javascript" th:src="@{js/bundle_login.js}"></script>
+  <script type="module">
+    import {connectWallet, getAccountAddress, signMessage} from '/js/base.js';
+
+    async function createLoginMessage(chainId, address) {
+      const query = 'chain_id=' + chainId + '&address=' + address;
+      const res = await fetch('/login-message?' + query, {
+        credentials: 'include',
+      });
+      return await res.text();
+    }
+
+    async function loginInWithEthereum(evt) {
+      evt.preventDefault();
+
+      // Create and sign message
+      const address = await getAccountAddress();
+      const message = await createLoginMessage(1, address);
+      const signature = await signMessage(message);
+
+      document.getElementById('siweMessage').value = window.btoa(message);
+      document.getElementById('siweSignature').value = window.btoa(signature);
+
+      const form = document.getElementById('loginForm');
+      form.submit();
+    }
+
+    const connectWalletButton = document.getElementById('connectWalletButton');
+    connectWalletButton && connectWalletButton.addEventListener('click', connectWallet, false);
+
+    const loginButton = document.getElementById('loginButton');
+    loginButton && loginButton.addEventListener('click', function(e) {loginInWithEthereum(e);},
+        false);
+
+    connectWallet();
+  </script>
 </body>
 </html>

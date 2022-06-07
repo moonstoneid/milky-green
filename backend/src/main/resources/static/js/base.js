@@ -1,10 +1,8 @@
-import { ethers } from 'ethers';
-
-declare var window: any
+import { ethers } from '/js/ethers.js';
 
 const ethereum = window.ethereum;
 
-let signer: ethers.providers.JsonRpcSigner;
+let signer;
 
 function connectWallet() {
     if (!ethereum) {
@@ -12,11 +10,10 @@ function connectWallet() {
         return;
     }
 
-    // Get provider
     const provider = new ethers.providers.Web3Provider(ethereum);
 
-    // Connect wallet
     signer = provider.getSigner();
+
     provider.send('eth_requestAccounts', [])
         .then(() => {
             hideError();
@@ -29,7 +26,15 @@ function connectWallet() {
         });
 }
 
-function showError(message: string) {
+async function getAccountAddress() {
+    return await signer.getAddress();
+}
+
+async function signMessage(message) {
+    return await signer.signMessage(message);
+}
+
+function showError(message) {
     const div = document.getElementById('errorDiv');
     div.innerHTML = message;
     div.style.display = 'block';
@@ -55,4 +60,4 @@ function showContent() {
     div.style.display = 'block';
 }
 
-export {signer, connectWallet}
+export { connectWallet, getAccountAddress, signMessage };

@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Consent</title>
+  <meta th:name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
   <h1>Consent required</h1>
@@ -54,6 +56,45 @@
       <button type="submit" id="consentDenyButton" name="consent_action" value="cancel">Cancel</button>
     </form>
   </div>
-  <script type="text/javascript" th:src="@{../js/bundle_consent.js}"></script>
+  <script type="module">
+    import {connectWallet, getAccountAddress, signMessage} from '/js/base.js';
+
+    async function createConsentMessage(chainId, address, clientId) {
+      const query = 'chain_id=' + chainId + '&address=' + address + '&client_id=' + clientId ;
+      const res = await fetch('/consent-message?' + query, {
+        credentials: 'include',
+      });
+      return await res.text();
+    }
+
+    async function authorizeWithEthereum(evt) {
+      evt.preventDefault();
+
+      const oauthClientId = document.getElementById('oauthClientId').innerHTML;
+
+      const address = await getAccountAddress();
+      const message = await createConsentMessage(1, address, oauthClientId);
+      const signature = await signMessage(message);
+
+      document.getElementById('siweMessage').value = window.btoa(message);
+      document.getElementById('siweSignature').value = window.btoa(signature);
+
+      const form = document.getElementById('consentForm');
+      form.submit();
+    }
+
+    const connectWalletButton = document.getElementById('connectWalletButton');
+    connectWalletButton && connectWalletButton.addEventListener('click', connectWallet, false);
+
+    const consentApproveButton = document.getElementById('consentApproveButton');
+    consentApproveButton && consentApproveButton.addEventListener('click',
+        function(e) {authorizeWithEthereum(e);}, false);
+
+    const consentDenyButton = document.getElementById('consentDenyButton');
+    consentDenyButton && consentDenyButton.addEventListener('click',
+        function(e) {authorizeWithEthereum(e);}, false);
+
+    connectWallet();
+  </script>
 </body>
 </html>
