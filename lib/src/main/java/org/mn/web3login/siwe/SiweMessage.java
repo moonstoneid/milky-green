@@ -1,250 +1,577 @@
 package org.mn.web3login.siwe;
 
+import java.time.OffsetDateTime;
+import java.util.Arrays;
 
+import apg.Ast;
+import apg.Utilities;
 import lombok.Getter;
 import org.mn.web3login.siwe.error.ErrorTypes;
 import org.mn.web3login.siwe.error.SiweException;
-import org.mn.web3login.siwe.parser.ABNFParsedMessage;
+import org.mn.web3login.siwe.grammar.SiweGrammar;
 import org.mn.web3login.siwe.util.Utils;
+import org.mn.web3login.siwe.util.ValidatorUtils;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+/**
+ * Creates a new SiweMessage<.br>
+ * <br>
+ * A new instance can be created with {@link Builder} or with {@link Parser}.
+ */
 @Getter
 public class SiweMessage {
 
     /**
      * RFC 4501 dns authority that is requesting the signing.
      */
-    private String mDomain;
+    private String domain;
 
     /**
-     * Ethereum address performing the signing conformant to capitalization
-     * encoded checksum specified in EIP-55 where applicable.
+     * Ethereum address that requested the signing in EIP-55 format.
      */
-    private String mAddress;
+    private String address;
 
     /**
-     * Optional human-readable ASCII assertion that the user will sign, and it must not
-     * contain `\n`.
+     * Optional human-readable ASCII assertion that the user will sign, and it must not contain `\n`.
      */
-    private String mStatement;
+    private String statement;
 
     /**
-     * RFC 3986 URI referring to the resource that is the subject of the signing
-     * (as in the __subject__ of a claim).
+     * RFC 3986 URI referring to the resource that is the subject of the signing (as in the
+     * __subject__ of a claim).
      */
-    private String mUri;
+    private String uri;
 
     /**
      * Current version of the message.
      */
-    private String mVersion;
+    private String version;
 
     /**
-     * EIP-155 Chain ID to which the session is bound, and the network where
-     * Contract Accounts must be resolved.
+     * EIP-155 Chain ID to which the session is bound, and the network where Contract Accounts must
+     * be resolved.
      */
-    private int mChainId;
+    private int chainId;
 
     /**
-     * Randomized token used to prevent replay attacks, at least 8 alphanumeric
-     * characters.
+     * Randomized token used to prevent replay attacks, at least 8 alphanumeric characters.
      */
-    private String mNonce;
+    private String nonce;
 
     /**
      * ISO 8601 datetime string of the current time.
      */
-    private String mIssuedAt;
+    private String issuedAt;
 
     /**
-     * Optional ISO 8601 datetime string that, if present, indicates when the signed
-     * authentication message is no longer valid.
-     *
+     * Optional ISO 8601 datetime string that, if present, indicates when the signed authentication
+     * message is no longer valid.
      */
-    private String mExpirationTime;
+    private String expirationTime;
 
     /**
-     * Optional ISO 8601 datetime string that, if present, indicates when the signed
-     * authentication message will become valid.
+     * Optional ISO 8601 datetime string that, if present, indicates when the signed authentication
+     * message will become valid.
      */
-    private String mNotBefore;
+    private String notBefore;
 
     /**
-     * Optional system-specific identifier that may be used to uniquely refer to the
-     * sign-in request.
+     * Optional system-specific identifier that may be used to uniquely refer to the sign-in request.
      */
-    private String mRequestId;
+    private String requestId;
 
     /**
-     * List of information or references to information the user wishes to have
-     * resolved as part of authentication by the relying party. They are
-     * expressed as RFC 3986 URIs separated by `\n- `.
+     * List of information or references to information the user wishes to have resolved as part of
+     * authentication by the relying party. They are expressed as RFC 3986 URIs separated by `\n- `.
      */
-    private String[] mResources;
+    private String[] resources;
 
-    public SiweMessage(String msg) throws SiweException {
-        ABNFParsedMessage pMsg = new ABNFParsedMessage(msg);
+    /**
+     * Private default constructor. A new instance can be created with {@link Builder} or
+     * {@link Parser}.
+     */
+    private SiweMessage() {
 
-        mDomain = pMsg.getMDomain();
-        mAddress = pMsg.getMAddress();
-        mStatement = pMsg.getMStatement();
-        mUri = pMsg.getMUri();
-        mChainId = pMsg.getMChainId();
-        mVersion = pMsg.getMVersion();
-        mNonce = pMsg.getMNonce();
-        mIssuedAt = pMsg.getMIssuedAt();
-        mExpirationTime = pMsg.getMExpirationTime();
-        mNotBefore = pMsg.getMNotBefore();
-        mRequestId = pMsg.getMRequestId();
-        mResources = pMsg.getMResources();
     }
 
     /**
-     * This function can be used to retrieve an EIP-4361 formatted message for
-     * signature, although you can call it directly it's advised to use
-     * [signMessage()] instead which will resolve to the correct method based
-     * on the [type] attribute of this object, in case of other formats being
-     * implemented.
+     * Verifies the integrity of the fields of this object by checking several fields and the
+     * validity of the signature.
      *
-     * @return This message as an EIP-4361 formatted string
+     * @param domain    RFC 4501 dns authority that is requesting the signing
+     * @param nonce     The nonce issued by the backend
+     * @param signature A valid signature for this message
+     *
+     * @throws SiweException if the signature is invalid or if fields ar missing
      */
-    public String toMessage() {
-		String header = mDomain + " wants you to sign in with your Ethereum account:";
-        String uriField = "URI: " + mUri;
-        String prefix = header + "\n" + mAddress;
-        String versionField = "Version: " + mVersion;
-
-        if (mNonce == null) {
-            mNonce = Utils.generateNonce();
+    public void verify(String domain, String nonce, String signature) throws SiweException {
+        // Verify that the given domain matches the domain of this object
+        if (domain == null || domain.isEmpty() || !domain.equals(this.domain)) {
+            throw new SiweException("Domain does not match.", ErrorTypes.DOMAIN_MISMATCH);
         }
 
-        String chainField = "Chain ID: " + mChainId;
-
-        String nonceField = "Nonce: " + mNonce;
-
-        Set<String> suffixArray = new LinkedHashSet<>();
-        suffixArray.add(uriField);
-        suffixArray.add(versionField);
-        suffixArray.add(chainField);
-        suffixArray.add(nonceField);
-
-        suffixArray.add("Issued At: " + (mIssuedAt != null ? mIssuedAt : OffsetDateTime.now().toString()));
-
-        if (mExpirationTime != null) {
-            suffixArray.add("Expiration Time: " + mExpirationTime);
+        // Verify that the given nonce matches the nonce of this object
+        if (nonce == null || nonce.isEmpty() || !nonce.equals(this.nonce)) {
+            throw new SiweException("Nonce does not match.", ErrorTypes.NONCE_MISMATCH);
         }
 
-        if (mNotBefore != null) {
-            suffixArray.add("Not Before: " + mNotBefore);
-        }
+        long now = OffsetDateTime.now().toEpochSecond();
 
-        if (mRequestId != null) {
-            suffixArray.add("Request ID: " + mRequestId);
-        }
-
-        if (mResources != null) {
-            suffixArray.add("Resources:");
-            for (String res : mResources) {
-                suffixArray.add("- " + res);
+        // Verify that the message is not yet expired
+        if (expirationTime != null) {
+            long exp = OffsetDateTime.parse(expirationTime).toEpochSecond();
+            if (now >= exp) {
+                throw new SiweException("Message expired on " + expirationTime + ".",
+                        ErrorTypes.EXPIRED_MESSAGE);
             }
         }
 
-        String suffix = String.join("\n", suffixArray);
-        prefix = prefix + "\n\n" + mStatement;
-        if (mStatement != null) {
-            prefix += "\n";
-        }
-        return prefix + "\n" + suffix;
-    }
-
-    /**
-     *  Validates the integrity of the fields of this objects by matching it's
-     *  signature.
-     *
-     * @param signature A valid signature for this message
-     * @throws Exception An exception is thrown if the signature is invalid or if fields ar emissing
-     */
-    public void validate(String signature) throws SiweException {
-        String msg = prepareMessage();
-
-        Set<String> missing = new LinkedHashSet<>();
-        if(msg == null){
-            missing.add("Message");
-        }
-        if(signature == null){
-            missing.add("Signature");
-        }
-        if(mAddress == null){
-            missing.add("Address");
-        }
-        if(!missing.isEmpty()){
-            throw new SiweException("The following fields are missing" + String.join(",", missing), ErrorTypes.MALFORMED_SESSION);
+        // Verify that the message is already valid
+        if (notBefore != null) {
+            long nbfr = OffsetDateTime.parse(notBefore).toEpochSecond();
+            if (now < nbfr) {
+                throw new SiweException("Message is not valid before " + notBefore + ".",
+                        ErrorTypes.NOT_YET_VALID_MESSAGE);
+            }
         }
 
-        List<String> list = Utils.validate(msg, signature);
-
-        // TODO: Implement EIP-1271
-        // See https://github.com/spruceid/siwe/blob/main/lib/client.ts#L255
-
-        // Check if list contains value, ignore case-sensitivity
-        if (!list.stream().anyMatch(mAddress::equalsIgnoreCase)){
+        // Verify signature
+        if (!ValidatorUtils.isValidSignature(this, signature)) {
             throw new SiweException("Invalid signature.", ErrorTypes.INVALID_SIGNATURE);
         }
+    }
 
-        if(mExpirationTime != null) {
-            try {
-                long exp = OffsetDateTime.parse(mExpirationTime).toEpochSecond();
-                long now = OffsetDateTime.now().toEpochSecond();
-                if (now >= exp){
-                    throw new SiweException("Message expired on " + mExpirationTime, ErrorTypes.EXPIRED_MESSAGE);
-                }
-            }
-            catch (DateTimeParseException e){
-                throw new SiweException("Could not parse expiration time.", ErrorTypes.MALFORMED_SESSION);
-            }
+    /**
+     * Validates if the values of this object are present and in the correct format. Does not verify
+     * the correctness of these values.
+     *
+     * @throws SiweException if a field is invalid
+     */
+    private void validateMessage() throws SiweException {
+        // Check domain
+        if (domain == null || domain.isEmpty()) {
+            throw new SiweException("Domain is invalid.", ErrorTypes.INVALID_DOMAIN);
         }
 
-        if(mNotBefore != null) {
-            try {
-                long notBefore = OffsetDateTime.parse(mNotBefore).toEpochSecond();
-                long now = OffsetDateTime.now().toEpochSecond();
-                if (now < notBefore){
-                    throw new SiweException("Message is not valid before " + mNotBefore, ErrorTypes.NOTBEFORE_MESSAGE);
+        // Check if address conforms to EIP-55 (address checksum)
+        if (address == null || address.isEmpty() || !ValidatorUtils.isEIP55Address(address)) {
+            throw new SiweException("Address does not conform to EIP-55.", ErrorTypes.INVALID_ADDRESS);
+        }
+
+        // Check statement
+        if (statement == null) {
+            throw new SiweException("Statement is invalid.", ErrorTypes.INVALID_STATEMENT);
+        }
+
+        // Check URI
+        if (uri == null || uri.isEmpty() || !ValidatorUtils.isURI(uri)) {
+            throw new SiweException("URI is not a valid URI.", ErrorTypes.INVALID_URI);
+        }
+
+        // Check if version is 1
+        if (version == null || !version.equals("1")) {
+            throw new SiweException("Version must be 1.", ErrorTypes.INVALID_MESSAGE_VERSION);
+        }
+
+        // Check if nonce is alphanumeric and
+        if (nonce == null || !nonce.matches("[a-zA-Z0-9]{8,}")) {
+            throw new SiweException("Nonce is not alphanumeric or shorter than 8 chars.",
+                    ErrorTypes.INVALID_NONCE);
+        }
+
+        // Check issuedAt
+        if (issuedAt == null || !ValidatorUtils.isISO860Format(issuedAt)) {
+            throw new SiweException("IssuedAt does not conform to ISO-8601.",
+                    ErrorTypes.INVALID_TIME_FORMAT);
+        }
+
+        // Check if optional field expirationTime is present and has valid format
+        if (expirationTime != null && !ValidatorUtils.isISO860Format(expirationTime)) {
+            throw new SiweException("ExpirationTime does not conform to ISO-8601.",
+                    ErrorTypes.INVALID_TIME_FORMAT);
+        }
+
+        // Check if optional field notBefore is present and has valid format
+        if (notBefore != null && !ValidatorUtils.isISO860Format(notBefore)) {
+            throw new SiweException("NotBefore does not conform to ISO-8601.",
+                    ErrorTypes.INVALID_TIME_FORMAT);
+        }
+
+        // Check if optional field resources is present, not empty and has valid URI format
+        if (resources != null && resources.length > 0) {
+            for (String uri : resources) {
+                if (!ValidatorUtils.isURI(uri)) {
+                    throw new SiweException("Resources contains an invalid URI.",
+                            ErrorTypes.INVALID_RESOURCES);
                 }
-            }
-            catch (DateTimeParseException e){
-                throw new SiweException("Could not parse notBefore time.", ErrorTypes.MALFORMED_SESSION);
             }
         }
     }
 
     /**
-     * This method parses all the fields in the object and creates a sign
-     * message according with the type defined.
+     * This method parses all the fields in the object and returns a valid EIP-4361 string.
      *
-     * @return Returns a message ready to be signed according with the type defined in the object.
+     * @return a valid EIP-4361 string
      */
-    private String prepareMessage() {
+    public String toMessage() {
         String message;
 
-        // I know the switch is unnecessary until there are more than one cases
-        // I copied it from https://github.com/spruceid/siwe/blob/main/lib/client.ts#L204
-        switch (Integer.parseInt(mVersion)) {
-            case 1: {
-                message = this.toMessage();
+        // The switch becomes relevant once there are more than one version
+        switch (version) {
+            case "1": {
+                message = toMessageV1();
                 break;
             }
             default: {
-                message = this.toMessage();
+                message = toMessageV1();
                 break;
             }
         }
         return message;
+    }
+
+    /**
+     * This method parses all the fields in the object and returns a valid EIP-4361 string.
+     *
+     * @return a valid EIP-4361 string
+     */
+    private String toMessageV1() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(domain).append(" wants you to sign in with your Ethereum account:").append("\n");
+
+        sb.append(address).append("\n\n");
+
+        sb.append(statement);
+        if (statement != null) {
+            sb.append("\n");
+        }
+
+        sb.append("\n").append("URI: ").append(uri);
+        sb.append("\n").append("Version: ").append(version);
+        sb.append("\n").append("Chain ID: ").append(chainId);
+
+        if (nonce == null) {
+            nonce = Utils.generateNonce();
+        }
+        sb.append("\n").append("Nonce: ").append(nonce);
+
+        if (issuedAt == null) {
+            issuedAt = OffsetDateTime.now().toString();
+        }
+        sb.append("\n").append("Issued At: ").append(issuedAt);
+
+        if (expirationTime != null) {
+            sb.append("\n").append("Expiration Time: ").append(expirationTime);
+        }
+
+        if (notBefore != null) {
+            sb.append("\n").append("Not Before: ").append(notBefore);
+        }
+
+        if (requestId != null) {
+            sb.append("\n").append("Request ID: ").append(requestId);
+        }
+
+        if (resources != null) {
+            sb.append("\n").append("Resources:");
+            for (String res : resources) {
+                sb.append("\n- ").append(res);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * This builder creates new instances of {@link SiweMessage}.
+     */
+    public static class Builder {
+
+        private final SiweMessage siweMessage;
+
+        /**
+         * Constructs a new builder.
+         *
+         * @param domain   RFC 4501 dns authority that is requesting the signing
+         * @param address  Ethereum address performing the signing
+         * @param uri      RFC 3986 URI referring to the resource that is the subject of the signing
+         * @param version  Current version of the message
+         * @param chainId  EIP-155 Chain ID to which the session is bound
+         * @param nonce    Randomized token used to prevent replay attacks
+         * @param issuedAt ISO 8601 datetime string of the current time
+         */
+        public Builder(String domain, String address, String uri, String version, int chainId,
+                String nonce, String issuedAt) {
+            siweMessage = new SiweMessage();
+            siweMessage.domain = domain;
+            siweMessage.address = address;
+            siweMessage.uri = uri;
+            siweMessage.version = version;
+            siweMessage.chainId = chainId;
+            siweMessage.nonce = nonce;
+            siweMessage.issuedAt = issuedAt;
+        }
+
+        /**
+         * Sets a human-readable ASCII assertion that the user will sign. Must not contain '\n'.
+         *
+         * @param statement The statement
+         *
+         * @return a reference to this object
+         */
+        public Builder statement(String statement) {
+            siweMessage.statement = statement;
+            return this;
+        }
+
+        /**
+         * Sets a ISO 8601 datetime string that indicates when the signed authentication message is
+         * no longer valid.
+         *
+         * @param expirationTime The ISO 8601 datetime string
+         *
+         * @return a reference to this object
+         */
+        public Builder expirationTime(String expirationTime) {
+            siweMessage.expirationTime = expirationTime;
+            return this;
+        }
+
+        /**
+         * Sets a ISO 8601 datetime string that indicates when the signed authentication message
+         * will become valid.
+         *
+         * @param notBefore The ISO 8601 datetime string
+         *
+         * @return a reference to this object
+         */
+        public Builder notBefore(String notBefore) {
+            siweMessage.notBefore = notBefore;
+            return this;
+        }
+
+        /**
+         * Sets a requestId that may be used to uniquely refer to the sign-in request.
+         *
+         * @param requestId The requestId
+         *
+         * @return a reference to this object
+         */
+        public Builder requestId(String requestId) {
+            siweMessage.requestId = requestId;
+            return this;
+        }
+
+        /**
+         * Sets an array of resources
+         *
+         * @param resources The resources
+         *
+         * @return a reference to this object
+         */
+        public Builder resources(String[] resources) {
+            siweMessage.resources = resources;
+            return this;
+        }
+
+        /**
+         * Creates a new {@link SiweMessage} instance with the supplied configuration.
+         *
+         * @return a new {@link SiweMessage} instance
+         *
+         * @throws SiweException if a field is invalid
+         */
+        public SiweMessage build() throws SiweException {
+            // After all fields are set, check if all mandatory fields are present and in the
+            // correct format.
+            siweMessage.validateMessage();
+            return siweMessage;
+        }
+
+    }
+
+    /**
+     * An ABNF (Augmented Backus-Naur Form) parser for EIP-4361 strings.
+     */
+    public static class Parser {
+
+        private String domain;
+        private String address;
+        private String statement;
+        private String uri;
+        private String version;
+        private int chainId;
+        private String nonce;
+        private String issuedAt;
+        private String expirationTime;
+        private String notBefore;
+        private String requestId;
+        private String[] resources;
+
+        public Parser() {
+
+        }
+
+        /**
+         * Tries to parse the given string. The given string must be an EIP-4361 formatted message,
+         * otherwise an exception is thrown.
+         *
+         * @param msg A valid EIP-4361 message
+         *
+         * @throws SiweException if the parsing fails
+         */
+        public SiweMessage parse(String msg) throws SiweException {
+            apg.Parser parser = new apg.Parser(SiweGrammar.getInstance());
+            parser.setStartRule(SiweGrammar.RuleNames.SIGN_IN_WITH_ETHEREUM.ruleID());
+            parser.setInputString(msg);
+
+            Ast ast = parser.enableAst(true);
+
+            apg.Parser.Result parseResult;
+            try {
+                ast.enableRuleNode(SiweGrammar.RuleNames.SIGN_IN_WITH_ETHEREUM.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.DOMAIN.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.ADDRESS.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.STATEMENT.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.URI.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.VERSION.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.NONCE.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.ISSUED_AT.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.EXPIRATION_TIME.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.NOT_BEFORE.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.REQUEST_ID.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.CHAIN_ID.ruleID(), true);
+                ast.enableRuleNode(SiweGrammar.RuleNames.RESOURCES.ruleID(), true);
+                parseResult = parser.parse();
+            } catch (Exception e) {
+                throw new SiweException("ABNF parsing failed.", ErrorTypes.UNABLE_TO_PARSE);
+            }
+            if (!parseResult.success()) {
+                throw new SiweException("ABNF parsing failed.", ErrorTypes.UNABLE_TO_PARSE);
+            }
+
+            try {
+                ast.setRuleCallback(SiweGrammar.RuleNames.DOMAIN.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.DOMAIN.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.ADDRESS.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.ADDRESS.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.STATEMENT.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.STATEMENT.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.URI.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.URI.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.VERSION.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.VERSION.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.NONCE.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.NONCE.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.ISSUED_AT.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.ISSUED_AT.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.EXPIRATION_TIME.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.EXPIRATION_TIME.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.NOT_BEFORE.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.NOT_BEFORE.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.REQUEST_ID.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.REQUEST_ID.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.CHAIN_ID.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.CHAIN_ID.ruleEnumName()));
+                ast.setRuleCallback(SiweGrammar.RuleNames.RESOURCES.ruleID(), new AstTranslator(ast,
+                        SiweGrammar.RuleNames.RESOURCES.ruleEnumName()));
+                ast.translateAst();
+            } catch (Exception e) {
+                throw new SiweException("Id out of range. Parsing failed.", ErrorTypes.UNABLE_TO_PARSE);
+            }
+
+            SiweMessage siweMessage = new SiweMessage();
+            siweMessage.domain = domain;
+            siweMessage.address = address;
+            siweMessage.statement = statement;
+            siweMessage.uri = uri;
+            siweMessage.version = version;
+            siweMessage.chainId = chainId;
+            siweMessage.nonce = nonce;
+            siweMessage.issuedAt = issuedAt;
+            siweMessage.expirationTime = expirationTime;
+            siweMessage.notBefore = notBefore;
+            siweMessage.requestId = requestId;
+            siweMessage.resources = resources;
+
+            // After all fields are set, check if all mandatory fields are present and in the
+            // correct format
+            siweMessage.validateMessage();
+
+            return siweMessage;
+        }
+
+        private class AstTranslator extends Ast.AstCallback {
+
+            private final String nodeName;
+
+            private AstTranslator(Ast ast, String nodeName) {
+                super(ast);
+                this.nodeName = nodeName;
+            }
+
+            @Override
+            public boolean preBranch(int offset, int length) {
+                String input = new String(callbackData.inputString);
+                String substring = input.substring(offset, offset + length);
+                int maxLength = substring.length();
+
+                String value = Utilities.charArrayToString(callbackData.inputString, offset, length,
+                        maxLength);
+                switch (SiweGrammar.RuleNames.valueOf(nodeName)) {
+                    case DOMAIN:
+                        domain = value;
+                        break;
+                    case ADDRESS:
+                        address = value;
+                        break;
+                    case STATEMENT:
+                        statement = value;
+                        break;
+                    case URI:
+                        uri = value;
+                        break;
+                    case VERSION:
+                        version = value;
+                        break;
+                    case NONCE:
+                        nonce = value;
+                        break;
+                    case ISSUED_AT:
+                        issuedAt = value;
+                        break;
+                    case EXPIRATION_TIME:
+                        expirationTime = value;
+                        break;
+                    case NOT_BEFORE:
+                        notBefore = value;
+                        break;
+                    case REQUEST_ID:
+                        requestId = value;
+                        break;
+                    case CHAIN_ID:
+                        chainId = Integer.parseInt(value);
+                        break;
+                    case RESOURCES:
+                        // Split resources by \n and remove "- " at the beginning
+                        resources = Arrays.stream(substring.split("\n"))
+                                .filter(x -> !x.isEmpty())
+                                .map(s -> s.replace("- ", ""))
+                                .toArray(String[]::new);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public void postBranch(int offset, int length) {
+
+            }
+
+        }
+
     }
 
 }

@@ -29,6 +29,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.ssill2</groupId>
+            <artifactId>apg-java</artifactId>
+            <version>3954fb</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
@@ -39,6 +45,13 @@
             <version>4.8.7</version>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

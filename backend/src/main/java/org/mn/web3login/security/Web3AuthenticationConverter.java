@@ -1,6 +1,5 @@
 package org.mn.web3login.security;
 
-import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 
 import org.mn.web3login.siwe.SiweMessage;
@@ -46,17 +45,18 @@ public class Web3AuthenticationConverter implements AuthenticationConverter {
                 .extractAuthenticationRequest(request);
 
         Web3Credentials credentials = web3Authentication.getCredentials();
+        String domain = credentials.getDomain();
 
         // Try to parse the message
         // Throws an exception if message is not a valid EIP-4361 message.
         SiweMessage siweMessage = null;
         try {
-            siweMessage = new SiweMessage(credentials.getMessage());
+            siweMessage = new SiweMessage.Parser().parse(credentials.getMessage());
         } catch (SiweException e) {
-            throwError("Malformed message!");
+            throwError("Malformed message! "+ e.getMessage());
         }
 
-        String address = siweMessage.getMAddress();
+        String address = siweMessage.getAddress();
 
         // Throws UsernameNotFoundException
         UserDetails userDetails = userDetailsService.loadUserByUsername(address);
@@ -65,25 +65,23 @@ public class Web3AuthenticationConverter implements AuthenticationConverter {
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
         // been reached or now < notBefore
         try {
-            siweMessage.validate(credentials.getSignature());
+            // TODO: Fix domain check
+            siweMessage.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
         } catch (SiweException e) {
-            switch (e.getMErrorType()) {
-                case INVALID_SIGNATURE:
-                    throwError("Invalid signature!");
+            switch (e.getErrorType()) {
+                case DOMAIN_MISMATCH:
+                    throwError("Domain does not match!");
+                case NONCE_MISMATCH:
+                    throwError("Nonce does not match!");
                 case EXPIRED_MESSAGE:
                     throwError("Message expired!");
-                case MALFORMED_SESSION:
-                    throwError("Malformed session!");
-                case NOTBEFORE_MESSAGE:
+                case NOT_YET_VALID_MESSAGE:
                     throwError("Message not valid yet!");
+                case INVALID_SIGNATURE:
+                    throwError("Invalid signature");
                 default:
                     throwError("Unknown error!");
             }
-        }
-
-        // Check nonce
-        if (!Objects.equals(credentials.getNonce(), siweMessage.getMNonce())) {
-            throwError("Incorrect nonce");
         }
     }
 
