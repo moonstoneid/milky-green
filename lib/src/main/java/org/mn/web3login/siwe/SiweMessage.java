@@ -1,21 +1,20 @@
 package org.mn.web3login.siwe;
 
-
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import org.mn.web3login.siwe.error.ErrorTypes;
-import org.mn.web3login.siwe.error.SiweException;
-import org.mn.web3login.siwe.grammar.SiweGrammar;
-import org.mn.web3login.siwe.grammar.apg.Ast;
-import org.mn.web3login.siwe.grammar.apg.Utilities;
-import org.mn.web3login.siwe.util.Utils;
-import org.mn.web3login.siwe.util.ValidatorUtils;
-
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import apg.Ast;
+import apg.Utilities;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import org.mn.web3login.siwe.error.ErrorTypes;
+import org.mn.web3login.siwe.error.SiweException;
+import org.mn.web3login.siwe.grammar.SiweGrammar;
+import org.mn.web3login.siwe.util.Utils;
+import org.mn.web3login.siwe.util.ValidatorUtils;
 
 /**
  * Creates a new SiweMessage<br>
@@ -408,8 +407,7 @@ public class SiweMessage {
          * @throws {@link SiweException} if the parsing fails
          */
         public SiweMessage parse(String msg) throws SiweException {
-            org.mn.web3login.siwe.grammar.apg.Parser parser =
-                    new org.mn.web3login.siwe.grammar.apg.Parser(SiweGrammar.getInstance());
+            apg.Parser parser = new apg.Parser(SiweGrammar.getInstance());
             parser.setStartRule(SiweGrammar.RuleNames.SIGN_IN_WITH_ETHEREUM.ruleID());
             parser.setInputString(msg);
 
@@ -429,7 +427,7 @@ public class SiweMessage {
                 ast.enableRuleNode(SiweGrammar.RuleNames.REQUEST_ID.ruleID(), true);
                 ast.enableRuleNode(SiweGrammar.RuleNames.CHAIN_ID.ruleID(), true);
                 ast.enableRuleNode(SiweGrammar.RuleNames.RESOURCES.ruleID(), true);
-                org.mn.web3login.siwe.grammar.apg.Parser.Result parse = parser.parse();
+                apg.Parser.Result parse = parser.parse();
 
                 if (!parse.success()) {
                     throw new SiweException("ABNF parsing failed", ErrorTypes.UNABLE_TO_PARSE);
