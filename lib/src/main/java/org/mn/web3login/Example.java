@@ -27,11 +27,9 @@ public class Example {
                     "78b899d8e965efbaadba2149c7c6460c61B";
 
     public static void main(String[] args) {
-        SiweMessage siweMessage;
-
         try {
             // Try to parse the String. Throws an exception if message is not a valid EIP-4361 message.
-            siweMessage = new SiweMessage.Parser().parse(MESSAGE);
+            SiweMessage siweMessage = new SiweMessage.Parser().parse(MESSAGE);
 
             // Validate signature. Throws an exception if signature is invalid, mandatory fields are missing,
             // expiration has been reached or now<notBefore
@@ -39,7 +37,6 @@ public class Example {
         } catch (SiweException e) {
             e.printStackTrace();
         }
-
     }
 
 }

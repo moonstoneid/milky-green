@@ -10,17 +10,16 @@ import apg.Grammar;
 
 public class SiweGrammar extends Grammar {
 
-    // public API
-    public static Grammar getInstance(){
-        if(factoryInstance == null){
+    private static SiweGrammar factoryInstance = null;
+
+    public static Grammar getInstance() {
+        if (factoryInstance == null) {
             factoryInstance = new SiweGrammar(getRules(), getUdts(), getOpcodes());
         }
         return factoryInstance;
     }
 
-    // rule name enum
-    public static int ruleCount = 59;
-    public enum RuleNames{
+    public enum RuleNames {
         ADDRESS("address", 2, 47, 4),
         ALPHA("ALPHA", 55, 393, 3),
         AUTHORITY("authority", 16, 104, 10),
@@ -80,57 +79,64 @@ public class SiweGrammar extends Grammar {
         URI("URI", 13, 75, 12),
         USERINFO("userinfo", 17, 114, 6),
         VERSION("version", 4, 56, 1);
-        private String name;
-        private int id;
-        private int offset;
-        private int count;
+
+        private final String name;
+        private final int id;
+        private final int offset;
+        private final int count;
+
         RuleNames(String string, int id, int offset, int count){
             this.name = string;
             this.id = id;
             this.offset = offset;
             this.count = count;
         }
-        public  String ruleName(){return name;}
-        public String ruleEnumName(){
+
+        public String ruleName() {
+            return name;
+        }
+
+        public String ruleEnumName() {
             return name();
         }
-        public  int    ruleID(){return id;}
-        private int    opcodeOffset(){return offset;}
-        private int    opcodeCount(){return count;}
+
+        public int ruleID() {
+            return id;
+        }
+
+        private int opcodeOffset() {
+            return offset;
+        }
+
+        private int opcodeCount() {
+            return count;
+        }
+
     }
 
-    // UDT name enum
-    public static int udtCount = 0;
-    public enum UdtNames{
-    }
-
-    // private
-    private static SiweGrammar factoryInstance = null;
-    private SiweGrammar(Rule[] rules, Udt[] udts, Opcode[] opcodes){
+    private SiweGrammar(Rule[] rules, Udt[] udts, Opcode[] opcodes) {
         super(rules, udts, opcodes);
     }
 
-    private static Rule[] getRules(){
+    private static Rule[] getRules() {
     	Rule[] rules = new Rule[59];
-        for(RuleNames r : RuleNames.values()){
+        for (RuleNames r : RuleNames.values()) {
             rules[r.ruleID()] = getRule(r.ruleID(), r.ruleName(), r.opcodeOffset(), r.opcodeCount());
         }
         return rules;
     }
 
-    private static Udt[] getUdts(){
-    	Udt[] udts = new Udt[0];
-        return udts;
+    private static Udt[] getUdts() {
+    	return new Udt[0];
     }
 
-        // opcodes
-    private static Opcode[] getOpcodes(){
+    private static Opcode[] getOpcodes() {
     	Opcode[] op = new Opcode[406];
     	addOpcodes00(op);
         return op;
     }
 
-    private static void addOpcodes00(Opcode[] op){
+    private static void addOpcodes00(Opcode[] op) {
         {int[] a = {1,2,3,4,5,6,7,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,31,36,41}; op[0] = getOpcodeCat(a);}
         op[1] = getOpcodeRnm(1, 46); // domain
         {char[] a = {32,119,97,110,116,115,32,121,111,117,32,116,111,32,115,105,103,110,32,105,110,32,119,105,116,104,32,121,111,117,114,32,69,116,104,101,114,101,117,109,32,97,99,99,111,117,110,116,58}; op[2] = getOpcodeTbs(a);}
@@ -539,7 +545,7 @@ public class SiweGrammar extends Grammar {
         {char[] a = {70}; op[405] = getOpcodeTls(a);}
     }
 
-    public static void display(PrintStream out){
+    public static void display(PrintStream out) {
         out.println(";");
         out.println("; apg.SiweGrammar");
         out.println(";");
@@ -650,4 +656,5 @@ public class SiweGrammar extends Grammar {
         out.println("                  ; 0-9");
         out.println("HEXDIG         =  DIGIT / \"A\" / \"B\" / \"C\" / \"D\" / \"E\" / \"F\"");
     }
+
 }

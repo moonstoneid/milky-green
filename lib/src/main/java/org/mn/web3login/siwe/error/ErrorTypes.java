@@ -72,8 +72,8 @@ public enum ErrorTypes {
      */
     UNABLE_TO_PARSE(-14, "Unable to parse the message.");
 
-    private final int mNumber;
-    private final String mText;
+    private final int number;
+    private final String text;
 
     /**
      * Constructs a new enumeration constant with the provided error number and message.
@@ -82,8 +82,8 @@ public enum ErrorTypes {
      * @param text   The error message.
      */
     ErrorTypes(int number, String text) {
-        mNumber = number;
-        mText = text;
+        this.number = number;
+        this.text = text;
     }
 
 }

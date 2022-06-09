@@ -1,39 +1,40 @@
 package org.mn.web3login.siwe.error;
 
 import lombok.Getter;
-import lombok.experimental.Accessors;
 
 /**
- * Signals an error while working with Siwe messages
+ * Signals an error while working with SIWE messages.
  */
 public class SiweException extends Exception {
 
     private static final long serialVersionUID = 2642720416433996541L;
 
-    @Accessors(prefix = "m") @Getter
-    private ErrorTypes mErrorType;
+    @Getter
+    private final ErrorTypes errorType;
 
     /**
      * Constructs a new exception with the specified detail message and an ErrorType.
-     * @param message The detailed message.
-     * @param type The error type
+     *
+     * @param message   The detailed message
+     * @param errorType The error type
      */
-    public SiweException(String message, ErrorTypes type) {
+    public SiweException(String message, ErrorTypes errorType) {
         super(message);
-        mErrorType = type;
+        this.errorType = errorType;
     }
 
     /**
      * Constructs a new exception with the specified detail message and an ErrorType.
-     * @param message The detailed message.
-     * @param cause The cause (which is saved for later retrieval by the
-     *              {@link #getCause()} method). (A <code>null</code> value is permitted, and
-     *              indicates that the cause is nonexistent or unknown.)
-     * @param type The error type
+     *
+     * @param message   The detailed message
+     * @param cause     The cause (which is saved for later retrieval by the
+     *                  {@link #getCause()} method) (A <code>null</code> value is permitted, and
+     *                  indicates that the cause is nonexistent or unknown.)
+     * @param errorType The error type
      */
-    public SiweException(String message, Throwable cause, ErrorTypes type) {
+    public SiweException(String message, Throwable cause, ErrorTypes errorType) {
         super(message, cause);
-        mErrorType = type;
+        this.errorType = errorType;
     }
 
 }
