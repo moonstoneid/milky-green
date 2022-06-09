@@ -3,29 +3,35 @@
   xmlns:th="https://www.thymeleaf.org"
   xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
+  <meta charset="UTF-8">
   <title>Home</title>
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
   <div sec:authorize="isAuthenticated()">
-    <img class="mb-4" th:src="@{/img/ethereum.svg}" alt="Ethereum logo" width="72" height="72">
+    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
-    <p class="mt-0 mb-3 text">Hello [[${#httpServletRequest.remoteUser}]],<br>your Sign-In with Ethereum was successful!</p>
+    <p class="mt-0 mb-3 text">
+      Hello [[${#httpServletRequest.remoteUser}]],
+      <br>
+      your Sign-In with Ethereum was successful!
+    </p>
     <form th:action="@{/logout}" method="post">
-      <!-- TODO: destroy session-->
       <button class="btn btn-outline-dark" type="submit">Logout</button>
     </form>
   </div>
   <div sec:authorize="isAnonymous()">
     <form class="login-container" th:action="@{/login}" method="get">
-      <img class="mb-4" th:src="@{/img/ethereum.svg}" alt="Ethereum logo" width="72" height="72">
+      <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
       <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
       <p class="mt-0 mb-3 text">This is a simple OpenID Connect provider which supports Sign-In with Ethereum (EIP-4361).</p>
       <p class="mt-5 mb-3 text">Click Sign-In with Ethereum to try it out.</p>
-      <form><button class="btn btn-lg btn-dark" type="submit">Sign-In with Ethereum</button></form>
+      <form>
+        <button class="btn btn-lg btn-dark" type="submit">Sign-In with Ethereum</button>
+      </form>
     </form>
   </div>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
 </body>
 </html>

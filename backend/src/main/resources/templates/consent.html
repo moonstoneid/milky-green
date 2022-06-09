@@ -2,52 +2,105 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:th="https://www.thymeleaf.org">
 <head>
+  <meta charset="UTF-8">
   <title>Consent</title>
-  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <meta th:name="_csrf" th:content="${_csrf.token}"/>
+  <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="text-center">
-  <img class="mb-4" th:src="@{/img/ethereum.svg}" alt="Ethereum logo" width="72" height="72">
+  <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
   <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
   <h5 class="h5 mb-3 font-weight-normal">Consent required</h5>
-  <p class="mt-0 mb-3 text">The application
-    <span id="oauthClientId" th:text="${clientId}"></span>
-    wants to access your account<br>
-    <span th:text="${principalName}"></span>
-    .
-  </p>
-  <p class="mt-0 mb-3 text">The following permissions are requested by the above app.<br/>Please review these and consent
-    if you approve.</p>
-  <form method="post" action="/oauth2/authorize" id="consentForm">
-    <input type="hidden" name="client_id" th:value="${clientId}">
-    <input type="hidden" name="state" th:value="${state}">
-    <input type="hidden" name="message" id="siweMessage">
-    <input type="hidden" name="signature" id="siweSignature">
+  <div id="error-div" style="display: none"></div>
+  <button id="connect-wallet-button" style="display: none">Connect Wallet</button>
+  <div id="content-div" style="display: none">
+    <p class="mt-0 mb-3 text">
+      The application
+      <span id="oauth-client-id" th:text="${clientId}"></span>
+      wants to access your account<br>
+      <span th:text="${principalName}"></span>
+      .
+    </p>
+    <p class="mt-0 mb-3 text">
+      The following permissions are requested by the above app.
+      <br/>
+      Please review these and consent if you approve.
+    </p>
+    <form id="consent-form" th:action="@{/oauth2/authorize}" method="post">
+      <input name="client_id" type="hidden" th:value="${clientId}">
+      <input name="state" type="hidden" th:value="${state}">
+      <input name="message" type="hidden" id="siwe-message">
+      <input name="signature" type="hidden" id="siwe-signature">
 
-    <div th:each="scope: ${scopes}">
-      <input type="checkbox"
-             name="scope"
-             th:value="${scope.scope}"
-             th:id="${scope.scope}"
-             checked>
-      <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-      <p th:text="${scope.description}"></p>
-    </div>
+      <div th:each="scope: ${scopes}">
+        <input name="scope"
+               type="checkbox"
+               th:id="${scope.scope}"
+               th:value="${scope.scope}"
+               checked>
+        <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+        <p th:text="${scope.description}"></p>
+      </div>
 
-    <p th:if="${not #lists.isEmpty(previouslyApprovedScopes)}">You have already granted the
-      following permissions to the above app:</p>
-    <div th:each="scope: ${previouslyApprovedScopes}">
-      <input type="checkbox"
-             th:id="${scope.scope}"
-             disabled
-             checked>
-      <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-      <p th:text="${scope.description}"></p>
-    </div>
-    <button type="submit" class="btn btn btn-dark" id="consentApproveButton" name="consent_action" value="approve">Submit Consent</button>
-    <button type="submit" class="btn btn-outline-danger" id="consentDenyButton" name="consent_action" value="cancel">Cancel</button>
-  </form>
-  <script type="text/javascript" th:src="@{../js/bundle.js}"></script>
-  <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+      <p th:if="${not #lists.isEmpty(previouslyApprovedScopes)}">
+        You have already granted the following permissions to the above app:
+      </p>
+      <div th:each="scope: ${previouslyApprovedScopes}">
+        <input name="approved_scope"
+               type="checkbox"
+               th:id="${scope.scope}"
+               disabled
+               checked>
+        <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+        <p th:text="${scope.description}"></p>
+      </div>
+
+      <button type="submit" id="consent-approve-button" class="btn btn btn-dark" name="consent_action" value="approve">Submit Consent</button>
+      <button type="submit" id="consent-deny-button" class="btn btn-outline-danger" name="consent_action" value="cancel">Cancel</button>
+    </form>
+  </div>
+  <script type="module">
+    import {connectWallet, getAccountAddress, signMessage} from '/js/base.js';
+
+    async function createConsentMessage(chainId, address, clientId) {
+      const query = 'chain_id=' + chainId + '&address=' + address + '&client_id=' + clientId ;
+      const res = await fetch('/consent-message?' + query, {
+        credentials: 'include',
+      });
+      return await res.text();
+    }
+
+    async function authorizeWithEthereum(evt) {
+      evt.preventDefault();
+
+      const oauthClientId = document.getElementById('oauth-client-id').innerHTML;
+
+      const address = await getAccountAddress();
+      const message = await createConsentMessage(1, address, oauthClientId);
+      const signature = await signMessage(message);
+
+      document.getElementById('siwe-message').value = window.btoa(message);
+      document.getElementById('siwe-signature').value = window.btoa(signature);
+
+      const form = document.getElementById('consent-form');
+      form.submit();
+    }
+
+    const connectWalletButton = document.getElementById('connect-wallet-button');
+    connectWalletButton && connectWalletButton.addEventListener('click', connectWallet, false);
+
+    const consentApproveButton = document.getElementById('consent-approve-button');
+    consentApproveButton && consentApproveButton.addEventListener('click',
+            function(e) {authorizeWithEthereum(e);}, false);
+
+    const consentDenyButton = document.getElementById('consent-deny-button');
+    consentDenyButton && consentDenyButton.addEventListener('click',
+            function(e) {authorizeWithEthereum(e);}, false);
+
+    connectWallet();
+  </script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
 </body>
 </html>

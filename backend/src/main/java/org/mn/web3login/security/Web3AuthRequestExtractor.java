@@ -2,6 +2,7 @@ package org.mn.web3login.security;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.mn.web3login.AppConstants;
 import org.springframework.util.Base64Utils;
 
 public class Web3AuthRequestExtractor {
@@ -23,7 +24,9 @@ public class Web3AuthRequestExtractor {
 
         String nonce = (String) request.getSession().getAttribute(NONCE_PARAMETER);
 
-        return new Web3AuthenticationToken(new Web3Credentials(message, signature, nonce));
+        String domain = AppConstants.DOMAIN;
+
+        return new Web3AuthenticationToken(new Web3Credentials(message, signature, nonce, domain));
     }
 
 }

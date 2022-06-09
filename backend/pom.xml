@@ -20,10 +20,12 @@
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-download-plugin.version>1.3.0</maven-download-plugin.version>
 
         <spring-authorization-server.version>0.3.0</spring-authorization-server.version>
+
+        <ethers.version>5.6</ethers.version>
         <bootstrap.version>5.1.3</bootstrap.version>
-        <webjars-locator.version>0.45</webjars-locator.version>
     </properties>
 
     <dependencies>
@@ -74,19 +76,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>${bootstrap.version}</version>
-        </dependency>
-
-        <!-- Helper to reference the WebJars assets without using the version -->
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator</artifactId>
-            <version>${webjars-locator.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.mn.web3.login</groupId>
             <artifactId>lib</artifactId>
             <version>${project.version}</version>
@@ -109,27 +98,44 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>${maven-download-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>generate-resources</phase>
+                        <id>download-ethers-js</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>wget</goal>
                         </goals>
                         <configuration>
+                            <url>https://cdn.ethers.io/lib/ethers-${ethers.version}.esm.min.js</url>
                             <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>../frontend/dist</directory>
-                                    <includes>
-                                        <include>*.js</include>
-                                    </includes>
-                                </resource>
-                            </resources>
+                            <outputFileName>ethers.js</outputFileName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-bootstrap-css</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://cdn.jsdelivr.net/npm/bootstrap@${bootstrap.version}/dist/css/bootstrap.min.css</url>
+                            <outputDirectory>${project.build.directory}/classes/static/css</outputDirectory>
+                            <outputFileName>bootstrap.css</outputFileName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-bootstrap-js</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://cdn.jsdelivr.net/npm/bootstrap@${bootstrap.version}/dist/js/bootstrap.bundle.min.js</url>
+                            <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
+                            <outputFileName>bootstrap.js</outputFileName>
                         </configuration>
                     </execution>
                 </executions>

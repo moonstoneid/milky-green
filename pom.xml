@@ -18,7 +18,6 @@
 
     <modules>
         <module>lib</module>
-        <module>frontend</module>
         <module>backend</module>
     </modules>
 

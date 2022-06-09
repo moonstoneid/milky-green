@@ -1,33 +1,70 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="https://www.thymeleaf.org">
+  xmlns:th="https://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta th:name="_csrf" th:content="${_csrf.token}"/>
-    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Gimme your signature, baby ;-)</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
-    <div>
-        <img class="mb-4" th:src="@{/img/ethereum.svg}" alt="Ethereum logo" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h1>
-        <div th:if= "${param.logout == null && param.error == null }">
-            <p class="mt-5 mb-3 text-muted">Connecting to Metamask and waiting for signature...</p>
-            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
-        </div>
-        <div th:if="${param.error}">
-            <p class="mt-5 mb-3 text-muted">Invalid username or password.</p>
-            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
-        </div>
-        <div th:if="${param.logout}">
-            <p class="mt-5 mb-3 text-muted">You have been logged out.</p>
-            <input type="button" class="btn btn-lg btn-dark" id="loginButton" value="Login with MetaMask" />
-        </div>
+  <div>
+    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h1>
+    <div th:if="${param.logout == null && param.error == null }">
+      <p class="mt-5 mb-3 text-muted">Connecting to Metamask and waiting for signature ...</p>
     </div>
-    <div id="errorDiv" style="visibility: hidden"></div>
-    <script type="text/javascript" th:src="@{js/bundle.js}"></script>
-    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <div th:if="${param.error}">
+      <p class="mt-5 mb-3 text-muted">Invalid username or password.</p>
+    </div>
+    <div th:if="${param.logout}">
+      <p class="mt-5 mb-3 text-muted">You have been logged out.</p>
+    </div>
+  <div id="error-div" style="visibility: hidden"></div>
+  <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">Connect Wallet</button>
+  <div id="content-div" style="display: none">
+    <form id="login-form" th:action="@{/login}" method="post">
+      <input type="hidden" name="message" id="siwe-message">
+      <input type="hidden" name="signature" id="siwe-signature">
+      <button type="submit" id="login-button" class="btn btn-lg btn-dark" name="login_action">Login</button>
+    </form>
+  </div>
+  </div>
+  <script type="module">
+    import {connectWallet, getAccountAddress, signMessage} from '/js/base.js';
+
+    async function createLoginMessage(chainId, address) {
+      const query = 'chain_id=' + chainId + '&address=' + address;
+      const res = await fetch('/login-message?' + query, {
+        credentials: 'include',
+      });
+      return await res.text();
+    }
+
+    async function loginInWithEthereum(evt) {
+      evt.preventDefault();
+
+      // Create and sign message
+      const address = await getAccountAddress();
+      const message = await createLoginMessage(1, address);
+      const signature = await signMessage(message);
+
+      document.getElementById('siwe-message').value = window.btoa(message);
+      document.getElementById('siwe-signature').value = window.btoa(signature);
+
+      const form = document.getElementById('login-form');
+      form.submit();
+    }
+
+    const connectWalletButton = document.getElementById('connect-wallet-button');
+    connectWalletButton && connectWalletButton.addEventListener('click', connectWallet, false);
+
+    const loginButton = document.getElementById('login-button');
+    loginButton && loginButton.addEventListener('click', function(e) {loginInWithEthereum(e);},
+        false);
+
+    connectWallet();
+  </script>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
 </body>
 </html>
