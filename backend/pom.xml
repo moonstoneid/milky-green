@@ -20,8 +20,11 @@
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-download-plugin.version>1.3.0</maven-download-plugin.version>
 
         <spring-authorization-server.version>0.3.0</spring-authorization-server.version>
+
+        <ethers.version>5.6</ethers.version>
     </properties>
 
     <dependencies>
@@ -94,27 +97,19 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>${maven-download-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>wget</goal>
                         </goals>
                         <configuration>
+                            <url>https://cdn.ethers.io/lib/ethers-${ethers.version}.esm.min.js</url>
                             <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>../frontend/dist</directory>
-                                    <includes>
-                                        <include>*.js</include>
-                                    </includes>
-                                </resource>
-                            </resources>
+                            <outputFileName>ethers.js</outputFileName>
                         </configuration>
                     </execution>
                 </executions>

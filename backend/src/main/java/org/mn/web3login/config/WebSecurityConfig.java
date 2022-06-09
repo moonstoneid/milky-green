@@ -92,7 +92,7 @@ public class WebSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
                 .authorizeRequests()
-                    .antMatchers("/", "/login", "/nonce").permitAll()
+                    .antMatchers("/", "/login", "/login-message", "/consent-message").permitAll()
                     .antMatchers("/**").authenticated()
                     .and()
                 .formLogin()
