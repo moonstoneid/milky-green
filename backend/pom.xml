@@ -26,6 +26,8 @@
 
         <ethers.version>5.6</ethers.version>
         <bootstrap.version>5.1.3</bootstrap.version>
+        <web3modal.version>1.9.8</web3modal.version>
+        <walletconnect.version>1.7.8</walletconnect.version>
     </properties>
 
     <dependencies>
@@ -140,6 +142,30 @@
                             <url>https://cdn.jsdelivr.net/npm/bootstrap@${bootstrap.version}/dist/js/bootstrap.bundle.min.js</url>
                             <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
                             <outputFileName>bootstrap.js</outputFileName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-web3modal-js</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://github.com/Web3Modal/web3modal/releases/download/${web3modal.version}/index.js</url>
+                            <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
+                            <outputFileName>web3modal.js</outputFileName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-walletconnect-js</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/@walletconnect/web3-provider@${walletconnect.version}/dist/umd/index.min.js</url>
+                            <outputDirectory>${project.build.directory}/classes/static/js</outputDirectory>
+                            <outputFileName>walletconnect.js</outputFileName>
                         </configuration>
                     </execution>
                 </executions>
