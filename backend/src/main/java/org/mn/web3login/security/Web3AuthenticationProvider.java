@@ -67,7 +67,7 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         }
 
         Web3Principal principal = new Web3Principal(address, userDetails);
-        return new Web3AuthenticationToken(principal, credentials, userDetails.getAuthorities());
+        return new Web3AuthenticationToken(principal, userDetails.getAuthorities());
     }
 
     @Override

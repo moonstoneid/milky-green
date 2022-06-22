@@ -3,12 +3,14 @@ package org.mn.web3login.config;
 import java.util.ArrayList;
 import javax.servlet.Filter;
 
+import org.mn.web3login.repo.UserRepository;
 import org.mn.web3login.security.Web3AuthenticationFilter;
 import org.mn.web3login.security.Web3AuthenticationProvider;
+import org.mn.web3login.service.JpaUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -18,7 +20,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -133,10 +134,9 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(JdbcTemplate jdbcTemplate) {
-        JdbcDaoImpl service = new JdbcDaoImpl();
-        service.setJdbcTemplate(jdbcTemplate);
-        return service;
+    @Primary
+    public UserDetailsService userDetailsService(UserRepository userRepository) {
+        return new JpaUserDetailsService(userRepository);
     }
 
 }
