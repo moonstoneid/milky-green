@@ -1,13 +1,12 @@
 CREATE TABLE users (
   username VARCHAR(50) NOT NULL,
-  password VARCHAR(50) NOT NULL,
   enabled INT NOT NULL,
   PRIMARY KEY (username)
 );
 
 CREATE TABLE authorities (
  username VARCHAR(50) NOT NULL,
- authority VARCHAR(1000) NOT NULL,
+ authority VARCHAR(100) NOT NULL,
  PRIMARY KEY (username)
 );
 
@@ -41,17 +40,17 @@ CREATE TABLE oauth2_authorization (
   access_token_value BLOB DEFAULT NULL,
   access_token_issued_at TIMESTAMP DEFAULT NULL,
   access_token_expires_at TIMESTAMP DEFAULT NULL,
-  access_token_metadata BLOB DEFAULT NULL,
-  access_token_type VARCHAR(100) DEFAULT NULL,
   access_token_scopes VARCHAR(1000) DEFAULT NULL,
-  oidc_id_token_value BLOB DEFAULT NULL,
-  oidc_id_token_issued_at TIMESTAMP DEFAULT NULL,
-  oidc_id_token_expires_at TIMESTAMP DEFAULT NULL,
-  oidc_id_token_metadata BLOB DEFAULT NULL,
+  access_token_metadata BLOB DEFAULT NULL,
   refresh_token_value BLOB DEFAULT NULL,
   refresh_token_issued_at TIMESTAMP DEFAULT NULL,
   refresh_token_expires_at TIMESTAMP DEFAULT NULL,
   refresh_token_metadata BLOB DEFAULT NULL,
+  id_token_value BLOB DEFAULT NULL,
+  id_token_issued_at TIMESTAMP DEFAULT NULL,
+  id_token_expires_at TIMESTAMP DEFAULT NULL,
+  id_token_claims VARCHAR(2000) DEFAULT NULL,
+  id_token_metadata BLOB DEFAULT NULL,
   PRIMARY KEY (id)
 );
 

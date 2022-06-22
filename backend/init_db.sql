@@ -1,5 +1,5 @@
-INSERT INTO users (username, password, enabled)
-  VALUES ('0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB', '', 1);
+INSERT INTO users (username, enabled)
+  VALUES ('0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB', 1);
 
 INSERT INTO authorities (username, authority)
   VALUES ('0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB', 'user');

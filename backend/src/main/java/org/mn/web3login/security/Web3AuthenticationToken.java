@@ -20,12 +20,20 @@ public class Web3AuthenticationToken extends AbstractAuthenticationToken {
         super.setAuthenticated(false);
     }
 
-    public Web3AuthenticationToken(Web3Principal principal, Web3Credentials credentials,
+    public Web3AuthenticationToken(Web3Principal principal,
             Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
-        this.credentials = credentials;
+        this.credentials = null;
         super.setAuthenticated(true);
+    }
+
+    protected Web3AuthenticationToken(Web3Principal principal, Web3Credentials credentials,
+            Collection<? extends GrantedAuthority> authorities, boolean isAuthenticated) {
+        super(authorities);
+        this.principal = principal;
+        this.credentials = credentials;
+        super.setAuthenticated(isAuthenticated);
     }
 
     @Override
