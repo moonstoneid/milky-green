@@ -1,8 +1,10 @@
 package org.mn.web3login.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.mn.web3login.model.Authorization;
 import org.mn.web3login.repo.AuthorizationRepository;
@@ -72,6 +74,15 @@ public class JpaAuthorizationService extends BaseOAuthService implements OAuth2A
         }
 
         return result.map(this::toObject).orElse(null);
+    }
+
+    public List<OAuth2Authorization> getByPrincipalName(String principalName) {
+        Assert.hasText(principalName, "principalName cannot be empty");
+
+        List<Authorization> authorizations = authorizationRepository.getAuthorizationsByPrincipalName(
+                principalName);
+
+        return authorizations.stream().map(this::toObject).collect(Collectors.toList());
     }
 
     private OAuth2Authorization toObject(Authorization entity) {

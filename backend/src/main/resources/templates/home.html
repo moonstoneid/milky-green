@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="https://www.thymeleaf.org"
-  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+  xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Home</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
-  <div sec:authorize="isAuthenticated()">
-    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
-    <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
-    <p class="mt-0 mb-3 text">
-      Hello [[${#httpServletRequest.remoteUser}]],
-      <br>
-      your Sign-In with Ethereum was successful!
-    </p>
-    <form th:action="@{/logout}" method="post">
-      <button class="btn btn-outline-dark" type="submit">Logout</button>
-    </form>
-  </div>
-  <div sec:authorize="isAnonymous()">
+<body class="text-center" th:style="${!isAuthenticated ? 'display:flex' : 'display:block'}">
+  <div th:if="${!isAuthenticated}">
     <form class="login-container" th:action="@{/login}" method="get">
       <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
       <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
@@ -31,6 +18,62 @@
         <button class="btn btn-lg btn-dark" type="submit">Sign-In with Ethereum</button>
       </form>
     </form>
+  </div>
+  <div th:if="${isAuthenticated}">
+    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
+    <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
+    <p class="mt-0 mb-3 text">
+      Hello [[${username}]],
+      <br>
+      your Sign-In with Ethereum was successful!
+    </p>
+    <form th:action="@{/logout}" method="post">
+      <button class="btn btn-outline-dark" type="submit">Logout</button>
+    </form>
+    <div class="home-container container-sm my-4">
+      <h4 class="h4 mb-3 font-weight-normal">Manage Authorizations</h4>
+      <form th:action="@{/perform-delete-authorizations}" method="post">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Client Name</th>
+            <th scope="col">Issued At</th>
+            <th scope="col">Expire At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${authorizations.empty}">
+            <td colspan="4">-</td>
+          </tr>
+          <tr th:each="authorization, i : ${authorizations}">
+            <td>
+              <div class="delete-control delete-checkbox">
+                <input
+                    th:id="'deleteCheck' + ${i.index}"
+                    id="deleteCheck1"
+                    name="authorization_id"
+                    type="checkbox"
+                    th:value="${authorization.id}"
+                    value="ad5c4e04-a296-428e-878c-80e13239dfa9"
+                    class="delete-control-input">
+                <label
+                    class="delete-control-label"
+                    th:for="'deleteCheck' + ${i.index}"
+                    for="deleteCheck1" />
+              </div>
+            </td>
+            <td th:text="${authorization.clientName}">Client Name</td>
+            <td th:text="${authorization.issuedAt}">2020-01-01 00:00:00</td>
+            <td th:text="${authorization.ExpireAt}">2020-01-01 00:00:00</td>
+          </tr>
+        </tbody>
+      </table>
+      <div th:if="${!authorizations.empty}">
+        <button class="btn btn-outline-dark" type="submit">Delete</button>
+      </div>
+      </form>
+    </div>
   </div>
   <script type="text/javascript" src="/js/bootstrap.js"></script>
 </body>

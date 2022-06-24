@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mn.web3login.model.Client;
 import org.mn.web3login.repo.ClientRepository;
@@ -22,6 +23,11 @@ public class JpaRegisteredClientRepository extends BaseOAuthService
     public JpaRegisteredClientRepository(ClientRepository clientRepository) {
         Assert.notNull(clientRepository, "clientRepository cannot be null");
         this.clientRepository = clientRepository;
+    }
+
+    public List<RegisteredClient> getAll() {
+        List<Client> clients = clientRepository.getAll();
+        return clients.stream().map(this::toObject).collect(Collectors.toList());
     }
 
     @Override
