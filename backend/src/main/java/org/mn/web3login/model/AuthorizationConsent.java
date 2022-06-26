@@ -7,7 +7,9 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -25,6 +27,8 @@ public class AuthorizationConsent {
     private String authorities;
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AuthorizationConsentId implements Serializable {
 
         private String registeredClientId;

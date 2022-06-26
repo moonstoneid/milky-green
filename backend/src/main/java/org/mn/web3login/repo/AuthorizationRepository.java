@@ -1,5 +1,6 @@
 package org.mn.web3login.repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.mn.web3login.model.Authorization;
@@ -16,12 +17,19 @@ public interface AuthorizationRepository extends JpaRepository<Authorization, St
     Optional<Authorization> findByAccessTokenValue(String accessToken);
     Optional<Authorization> findByRefreshTokenValue(String refreshToken);
 
-    @Query("select a from Authorization a where a.state = :token" +
+    @Query("select a from Authorization a" +
+            " where a.state = :token" +
             " or a.authorizationCodeValue = :token" +
             " or a.accessTokenValue = :token" +
             " or a.refreshTokenValue = :token"
     )
     Optional<Authorization> findByStateOrAuthorizationCodeOrAccessTokenOrRefreshToken(
             @Param("token") String token);
+
+    @Query("select a from Authorization a" +
+            " where a.principalName = :principalName"
+    )
+    List<Authorization> getAuthorizationsByPrincipalName(
+            @Param("principalName") String principalName);
 
 }

@@ -1,7 +1,9 @@
 package org.mn.web3login.service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mn.web3login.model.AuthorizationConsent;
 import org.mn.web3login.repo.AuthorizationConsentRepository;
@@ -37,8 +39,8 @@ public class JpaAuthorizationConsentService extends BaseOAuthService implements
     @Override
     public void remove(OAuth2AuthorizationConsent authorizationConsent) {
         Assert.notNull(authorizationConsent, "authorizationConsent cannot be null");
-        authorizationConsentRepository.deleteByRegisteredClientIdAndPrincipalName(
-                authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName());
+        authorizationConsentRepository.deleteById(new AuthorizationConsent.AuthorizationConsentId(
+                authorizationConsent.getRegisteredClientId(), authorizationConsent.getPrincipalName()));
     }
 
     @Override
@@ -47,6 +49,15 @@ public class JpaAuthorizationConsentService extends BaseOAuthService implements
         Assert.hasText(principalName, "principalName cannot be empty");
         return authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
                 registeredClientId, principalName).map(this::toObject).orElse(null);
+    }
+
+    public List<OAuth2AuthorizationConsent> getByPrincipalName(String principalName) {
+        Assert.hasText(principalName, "principalName cannot be empty");
+
+        List<AuthorizationConsent> authorizationConsents = authorizationConsentRepository
+                .getAuthorizationConsentsByPrincipalName(principalName);
+
+        return authorizationConsents.stream().map(this::toObject).collect(Collectors.toList());
     }
 
     private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {

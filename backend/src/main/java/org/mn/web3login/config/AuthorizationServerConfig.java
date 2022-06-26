@@ -18,9 +18,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
@@ -51,13 +48,13 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Primary
-    public RegisteredClientRepository registeredClientRepository(ClientRepository clientRepository) {
+    public JpaRegisteredClientRepository registeredClientRepository(ClientRepository clientRepository) {
         return new JpaRegisteredClientRepository(clientRepository);
     }
 
     @Bean
     @Primary
-    public OAuth2AuthorizationService authorizationService(
+    public JpaAuthorizationService authorizationService(
             AuthorizationRepository authorizationRepository,
             JpaRegisteredClientRepository registeredClientRepository) {
         return new JpaAuthorizationService(authorizationRepository, registeredClientRepository);
@@ -65,7 +62,7 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Primary
-    public OAuth2AuthorizationConsentService authorizationConsentService(
+    public JpaAuthorizationConsentService authorizationConsentService(
             AuthorizationConsentRepository authorizationConsentRepository,
             JpaRegisteredClientRepository registeredClientRepository) {
         return new JpaAuthorizationConsentService(authorizationConsentRepository,

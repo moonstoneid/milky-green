@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="https://www.thymeleaf.org"
-  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+  xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Home</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
-  <div sec:authorize="isAuthenticated()">
-    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
-    <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
-    <p class="mt-0 mb-3 text">
-      Hello [[${#httpServletRequest.remoteUser}]],
-      <br>
-      your Sign-In with Ethereum was successful!
-    </p>
-    <form th:action="@{/logout}" method="post">
-      <button class="btn btn-outline-dark" type="submit">Logout</button>
-    </form>
-  </div>
-  <div sec:authorize="isAnonymous()">
+<body class="text-center" th:style="${!isAuthenticated ? 'display:flex' : 'display:block'}">
+  <div th:if="${!isAuthenticated}">
     <form class="login-container" th:action="@{/login}" method="get">
       <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
       <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
@@ -31,6 +18,104 @@
         <button class="btn btn-lg btn-dark" type="submit">Sign-In with Ethereum</button>
       </form>
     </form>
+  </div>
+  <div th:if="${isAuthenticated}">
+    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
+    <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
+    <p class="mt-0 mb-3 text">
+      Hello [[${username}]],
+      <br>
+      your Sign-In with Ethereum was successful!
+    </p>
+    <form th:action="@{/logout}" method="post">
+      <button class="btn btn-outline-dark" type="submit">Logout</button>
+    </form>
+    <div class="home-container container-sm my-4">
+      <h4 class="h4 mb-3 font-weight-normal">Manage Consents</h4>
+      <form th:action="@{/perform-revoke-auth-consent}" method="post">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Client Name</th>
+            <th scope="col">Scopes</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${consents.empty}">
+            <td colspan="3">-</td>
+          </tr>
+          <tr th:each="consent, i : ${consents}">
+            <td>
+              <div class="revoke-consent-control revoke-consent-checkbox">
+                <input
+                        th:id="'revokeConsentCheck' + ${i.index}"
+                        id="revokeConsentCheck1"
+                        name="client_id"
+                        type="checkbox"
+                        th:value="${consent.clientId}"
+                        value="4ba680dd-b513-42a6-acab-b843eba6d846"
+                        class="revoke-consent-control-input">
+                <label
+                        class="revoke-consent-control-label"
+                        th:for="'revokeConsentCheck' + ${i.index}"
+                        for="revokeConsentCheck1" />
+              </div>
+            </td>
+            <td th:text="${consent.clientName}">Client Name</td>
+            <td th:text="${consent.scopes}">message.read, message.write</td>
+          </tr>
+          </tbody>
+        </table>
+        <div th:if="${!consents.empty}">
+          <button class="btn btn-outline-dark" type="submit">Revoke</button>
+        </div>
+      </form>
+    </div>
+    <div class="home-container container-sm my-4">
+      <h4 class="h4 mb-3 font-weight-normal">Manage Authorizations</h4>
+      <form th:action="@{/perform-delete-auth}" method="post">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Client Name</th>
+              <th scope="col">Issued At</th>
+              <th scope="col">Expire At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:if="${authorizations.empty}">
+              <td colspan="4">-</td>
+            </tr>
+            <tr th:each="authorization, i : ${authorizations}">
+              <td>
+                <div class="delete-auth-control delete-auth-checkbox">
+                  <input
+                      th:id="'deleteAuthCheck' + ${i.index}"
+                      id="deleteAuthCheck1"
+                      name="authorization_id"
+                      type="checkbox"
+                      th:value="${authorization.id}"
+                      value="ad5c4e04-a296-428e-878c-80e13239dfa9"
+                      class="delete-auth-control-input">
+                  <label
+                      class="delete-auth-control-label"
+                      th:for="'deleteAuthCheck' + ${i.index}"
+                      for="deleteAuthCheck1" />
+                </div>
+              </td>
+              <td th:text="${authorization.clientName}">Client Name</td>
+              <td th:text="${authorization.issuedAt}">2020-01-01 00:00:00</td>
+              <td th:text="${authorization.ExpireAt}">2020-01-01 00:00:00</td>
+            </tr>
+          </tbody>
+        </table>
+        <div th:if="${!authorizations.empty}">
+          <button class="btn btn-outline-dark" type="submit">Delete</button>
+        </div>
+      </form>
+    </div>
   </div>
   <script type="text/javascript" src="/js/bootstrap.js"></script>
 </body>
