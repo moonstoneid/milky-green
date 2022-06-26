@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
+<body class="text-center" style="display:flex">
   <div>
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h1 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h1>

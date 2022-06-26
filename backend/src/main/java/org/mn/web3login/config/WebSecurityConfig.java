@@ -36,7 +36,7 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                    .antMatchers("/css/**", "/img/**", "/js/**")
+                    .antMatchers("/css/**", "/img/**", "/js/**", "/favicon.ico")
                     .and()
                 .authorizeRequests()
                     .anyRequest().permitAll()
@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
-                    .failureUrl("/login")
+                    .failureUrl("/")
                     .and()
                 .csrf()
                     .ignoringRequestMatchers(endpointsMatcher)
@@ -93,11 +93,11 @@ public class WebSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
                 .authorizeRequests()
-                    .antMatchers("/", "/login", "/login-message", "/consent-message").permitAll()
+                    .antMatchers("/", "/login-message", "/consent-message").permitAll()
                     .antMatchers("/**").authenticated()
                     .and()
                 .formLogin()
-                    .loginPage("/login")
+                    .loginPage("/")
                     .successForwardUrl("/")
                     .and()
                 .logout()
@@ -115,7 +115,7 @@ public class WebSecurityConfig {
 
         private AuthenticationFailureHandler web3AuthenticationFailureHandler() {
             SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
-            handler.setDefaultFailureUrl("/login?error");
+            handler.setDefaultFailureUrl("/?error");
             return handler;
         }
 
