@@ -102,6 +102,7 @@ public class WebSecurityConfig {
                     .and()
                 .logout()
                     .permitAll()
+                    .logoutSuccessUrl("/")
                     .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
