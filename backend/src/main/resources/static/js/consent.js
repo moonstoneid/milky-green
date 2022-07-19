@@ -49,19 +49,22 @@ async function authorizeWithEthereum(evt) {
     // Get client ID for consent message
     const oauthClientId = document.getElementById('oauth-client-id').innerHTML;
 
-    // Create and sign message
+    // Create message
     const chainId = await getChainId();
     const address = await getAccountAddress();
     const message = await createConsentMessage(chainId, address, oauthClientId);
-    const signature = await signMessage(message);
 
-    // Update form
-    document.getElementById('siwe-message').value = window.btoa(message);
-    document.getElementById('siwe-signature').value = window.btoa(signature);
+    // Sign message
+    signMessage(message)
+        .then((signature) => {
+            // Update form
+            document.getElementById('siwe-message').value = window.btoa(message);
+            document.getElementById('siwe-signature').value = window.btoa(signature);
 
-    // Submit form
-    const form = document.getElementById('consent-form');
-    form.submit();
+            // Submit form
+            const form = document.getElementById('consent-form');
+            form.submit();
+        });
 }
 
 // Creates a valid EIP-4361 string

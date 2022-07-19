@@ -7,19 +7,8 @@
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" th:style="${!isAuthenticated ? 'display:flex' : 'display:block'}">
-  <div th:if="${!isAuthenticated}">
-    <form class="login-container" th:action="@{/login}" method="get">
-      <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
-      <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
-      <p class="mt-0 mb-3 text">This is a simple OpenID Connect provider which supports Sign-In with Ethereum (EIP-4361).</p>
-      <p class="mt-5 mb-3 text">Click Sign-In with Ethereum to try it out.</p>
-      <form>
-        <button class="btn btn-lg btn-dark" type="submit">Sign-In with Ethereum</button>
-      </form>
-    </form>
-  </div>
-  <div th:if="${isAuthenticated}">
+<body class="text-center">
+  <div>
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
     <p class="mt-0 mb-3 text">

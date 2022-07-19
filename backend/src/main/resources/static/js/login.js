@@ -39,19 +39,26 @@ function hideInfo() {
 
 // Submits the form
 async function loginInWithEthereum() {
-    // Create and sign message
+    // Create message
     const chainId = await getChainId();
     const address = await getAccountAddress();
     const message = await createLoginMessage(chainId, address);
-    const signature = await signMessage(message);
 
-    // Update form
-    document.getElementById('siwe-message').value = window.btoa(message);
-    document.getElementById('siwe-signature').value = window.btoa(signature);
+    // Sign message
+    signMessage(message)
+        .then((signature) => {
+            // Update form
+            document.getElementById('siwe-message').value = window.btoa(message);
+            document.getElementById('siwe-signature').value = window.btoa(signature);
 
-    // Submit form
-    const form = document.getElementById('login-form');
-    form.submit();
+            // Submit form
+            const form = document.getElementById('login-form');
+            form.submit();
+        })
+        .catch(() => {
+            showInfo("Please sign the message to sign in.");
+            showConnectWalletButton();
+        });
 }
 
 // Creates a valid EIP-4361 string
@@ -64,4 +71,3 @@ async function createLoginMessage(chainId, address) {
 }
 
 initWeb3Modal();
-connectWalletHandler();

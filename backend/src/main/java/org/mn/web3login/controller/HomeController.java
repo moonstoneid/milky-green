@@ -44,9 +44,9 @@ public class HomeController {
 
     private static final String REDIRECT_HOME = "redirect:/";
 
+    private static final String VIEW_LOGIN = "login";
     private static final String VIEW_HOME = "home";
 
-    private static final String ATTRIBUTE_IS_AUTHENTICATED = "isAuthenticated";
     private static final String ATTRIBUTE_USERNAME = "username";
     private static final String ATTRIBUTE_CONSENTS = "consents";
     private static final String ATTRIBUTE_AUTHORIZATIONS = "authorizations";
@@ -72,11 +72,8 @@ public class HomeController {
         Authentication authentication = securityContext.getAuthentication();
 
         if (authentication instanceof AnonymousAuthenticationToken) {
-            model.addAttribute(ATTRIBUTE_IS_AUTHENTICATED, false);
-            return VIEW_HOME;
+            return VIEW_LOGIN;
         }
-
-        model.addAttribute(ATTRIBUTE_IS_AUTHENTICATED, true);
 
         Web3AuthenticationToken web3Authentication = (Web3AuthenticationToken) authentication;
         Web3Principal web3Principal = web3Authentication.getPrincipal();

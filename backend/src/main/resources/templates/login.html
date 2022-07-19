@@ -7,17 +7,18 @@
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" th:style="${#authentication.getPrincipal().equals('anonymousUser') ? 'display:flex' : 'display:block'}">
+<body class="text-center" style="display:flex">
   <div>
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h1>
+    <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
+    <p class="mt-0 mb-3 text">This is a simple OpenID Connect provider which supports Sign-In with Ethereum (EIP-4361).</p>
     <div th:if="${param.error}">
       <p class="mt-5 mb-3 text-muted">Invalid address or signature.</p>
     </div>
-    <div class="mt-5">
-      <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">Connect Wallet</button>
-    </div>
     <div id="info-div" class="mt-5 mb-3 text-muted" style="display: none"></div>
+    <div class="mt-5">
+      <button id="connect-wallet-button" class="btn btn-lg btn-dark">Connect Wallet</button>
+    </div>
     <form id="login-form" th:action="@{/login}" method="post">
       <input type="hidden" name="message" id="siwe-message">
       <input type="hidden" name="signature" id="siwe-signature">
