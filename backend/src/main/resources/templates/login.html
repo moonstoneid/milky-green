@@ -14,31 +14,20 @@
     <div th:if="${param.error}">
       <p class="mt-5 mb-3 text-muted">Invalid address or signature.</p>
     </div>
-  <div id="info-div" class="mt-5 mb-3 text-muted" style="display: none"></div>
-  <div class="mt-5">
-    <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">Connect Wallet</button>
-  </div>
-  <div id="content-div" style="display: none">
+    <div class="mt-5">
+      <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">Connect Wallet</button>
+    </div>
+    <div id="info-div" class="mt-5 mb-3 text-muted" style="display: none"></div>
     <form id="login-form" th:action="@{/login}" method="post">
       <input type="hidden" name="message" id="siwe-message">
       <input type="hidden" name="signature" id="siwe-signature">
     </form>
   </div>
-  </div>
   <!--  TODO: NO ES module available for walletconnect; use webpack? -->
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/js/ethers.js"></script>
   <script type="text/javascript" src="/js/walletconnect.js"></script>
   <script type="text/javascript" src="/js/web3modal.js"></script>
-  <script type="module">
-    import { initWeb3Modal, connectWallet } from '/js/base.js';
-
-    const connectWalletButton = document.getElementById('connect-wallet-button');
-    connectWalletButton && connectWalletButton.addEventListener('click', connectWallet, false);
-
-    initWeb3Modal();
-    connectWallet();
-
-    //# sourceURL=inlinejs.js
-  </script>
-  <script type="text/javascript" src="/js/bootstrap.js"></script>
+  <script type="module" src="/js/login.js"></script>
 </body>
 </html>
