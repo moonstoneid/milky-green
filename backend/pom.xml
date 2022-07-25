@@ -23,6 +23,7 @@
         <maven-download-plugin.version>1.3.0</maven-download-plugin.version>
 
         <spring-authorization-server.version>0.3.0</spring-authorization-server.version>
+        <springdoc-openapi-ui.version>1.6.9</springdoc-openapi-ui.version>
 
         <bootstrap.version>5.1.3</bootstrap.version>
         <ethers.version>5.6</ethers.version>
@@ -74,6 +75,12 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
         </dependency>
 
         <dependency>
