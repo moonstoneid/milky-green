@@ -1,4 +1,4 @@
-package org.mn.web3login.controller;
+package org.mn.web3login.view.controller;
 
 import java.security.Principal;
 import java.util.Collections;
