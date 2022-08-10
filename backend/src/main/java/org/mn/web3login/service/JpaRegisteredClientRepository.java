@@ -36,6 +36,11 @@ public class JpaRegisteredClientRepository extends BaseOAuthService
         clientRepository.save(toEntity(registeredClient));
     }
 
+    public void delete(RegisteredClient registeredClient) {
+        Assert.notNull(registeredClient, "registeredClient cannot be null");
+        clientRepository.delete(toEntity(registeredClient));
+    }
+
     @Override
     public RegisteredClient findById(String id) {
         Assert.hasText(id, "id cannot be empty");
