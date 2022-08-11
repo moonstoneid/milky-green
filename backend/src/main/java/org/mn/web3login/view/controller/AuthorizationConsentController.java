@@ -1,4 +1,4 @@
-package org.mn.web3login.controller;
+package org.mn.web3login.view.controller;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mn.web3login.AppConstants;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -78,11 +79,11 @@ public class AuthorizationConsentController {
 
         static {
             scopeDescriptions.put(
-                    "message.read",
+                    AppConstants.OAUTH_SCOPE_READ,
                     "This application will be able to read your message."
             );
             scopeDescriptions.put(
-                    "message.write",
+                    AppConstants.OAUTH_SCOPE_WRITE,
                     "This application will be able to add new messages. It will also be able to " +
                             "edit and delete existing messages."
             );

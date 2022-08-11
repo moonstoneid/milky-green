@@ -1,4 +1,4 @@
-package org.mn.web3login.controller.model;
+package org.mn.web3login.view.model;
 
 import lombok.Data;
 

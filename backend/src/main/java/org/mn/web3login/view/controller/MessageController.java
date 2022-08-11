@@ -1,4 +1,4 @@
-package org.mn.web3login.controller;
+package org.mn.web3login.view.controller;
 
 import java.time.OffsetDateTime;
 import javax.servlet.http.HttpServletRequest;

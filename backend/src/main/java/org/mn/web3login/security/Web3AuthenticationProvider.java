@@ -27,11 +27,10 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Web3AuthenticationToken web3Authentication = (Web3AuthenticationToken) authentication;
         Web3Credentials credentials = web3Authentication.getCredentials();
-        String domain = credentials.getDomain();
 
         // Try to parse the message
         // Throws an exception if message is not a valid EIP-4361 message.
-        SiweMessage siweMessage = null;
+        SiweMessage siweMessage;
         try {
             siweMessage = new SiweMessage.Parser().parse(credentials.getMessage());
         } catch (SiweException e) {

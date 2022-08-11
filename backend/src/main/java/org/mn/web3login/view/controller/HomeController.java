@@ -1,4 +1,4 @@
-package org.mn.web3login.controller;
+package org.mn.web3login.view.controller;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
-import org.mn.web3login.controller.model.AuthorizationConsentVM;
-import org.mn.web3login.controller.model.AuthorizationVM;
+import org.mn.web3login.view.model.AuthorizationConsentVM;
+import org.mn.web3login.view.model.AuthorizationVM;
 import org.mn.web3login.security.Web3AuthenticationToken;
 import org.mn.web3login.security.Web3Principal;
 import org.mn.web3login.service.JpaAuthorizationConsentService;

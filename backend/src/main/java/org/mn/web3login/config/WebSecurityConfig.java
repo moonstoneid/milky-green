@@ -3,7 +3,10 @@ package org.mn.web3login.config;
 import java.util.ArrayList;
 import javax.servlet.Filter;
 
+import org.mn.web3login.AppConstants;
+import org.mn.web3login.AppProperties;
 import org.mn.web3login.repo.UserRepository;
+import org.mn.web3login.security.ApiKeyAuthenticationFilter;
 import org.mn.web3login.security.Web3AuthenticationFilter;
 import org.mn.web3login.security.Web3AuthenticationProvider;
 import org.mn.web3login.service.JpaUserDetailsService;
@@ -52,6 +55,63 @@ public class WebSecurityConfig {
 
     @Configuration
     @Order(2)
+    public static class ApiDocConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers()
+                    .antMatchers("/api", "/api/api-spec", "/api/api-spec/*", "/api/swagger-ui",
+                            "/api/swagger-ui/*")
+                    .and()
+                .authorizeRequests()
+                    .anyRequest().permitAll()
+                    .and()
+                .csrf().disable()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                .logout().disable();
+        }
+
+    }
+
+    @Configuration
+    @Order(3)
+    public static class ApiConfig extends WebSecurityConfigurerAdapter {
+
+        private final AppProperties appProperties;
+
+        public ApiConfig(AppProperties appProperties) {
+            this.appProperties = appProperties;
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers()
+                    .antMatchers("/api/**")
+                    .and()
+                .authorizeRequests()
+                    .anyRequest().hasAuthority(AppConstants.API_KEY_ROLE)
+                    .and()
+                .csrf().disable()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                .logout()
+                    .disable()
+                .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        }
+
+        public Filter authenticationFilter() {
+            ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter(appProperties.api.key);
+            filter.init();
+            return filter;
+        }
+
+    }
+
+    @Configuration
+    @Order(4)
     public static class OAuthConfig extends WebSecurityConfigurerAdapter {
 
         private final OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer;
@@ -80,7 +140,7 @@ public class WebSecurityConfig {
     }
 
     @Configuration
-    @Order(3)
+    @Order(5)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
         private final UserDetailsService userDetailsService;
