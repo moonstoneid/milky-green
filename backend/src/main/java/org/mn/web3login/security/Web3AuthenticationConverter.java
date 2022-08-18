@@ -2,8 +2,8 @@ package org.mn.web3login.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.mn.web3login.siwe.SiweMessage;
-import org.mn.web3login.siwe.error.SiweException;
+import com.moonstoneid.siwe.SiweMessage;
+import com.moonstoneid.siwe.error.SiweException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

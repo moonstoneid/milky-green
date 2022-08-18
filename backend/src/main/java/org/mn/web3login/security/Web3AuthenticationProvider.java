@@ -1,7 +1,7 @@
 package org.mn.web3login.security;
 
-import org.mn.web3login.siwe.SiweMessage;
-import org.mn.web3login.siwe.error.SiweException;
+import com.moonstoneid.siwe.SiweMessage;
+import com.moonstoneid.siwe.error.SiweException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;

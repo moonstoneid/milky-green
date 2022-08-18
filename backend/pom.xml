@@ -29,6 +29,7 @@
         <ethers.version>5.6</ethers.version>
         <walletconnect.version>1.7.8</walletconnect.version>
         <web3modal.version>1.9.8</web3modal.version>
+        <siwejava.version>1.0.0</siwejava.version>
     </properties>
 
     <dependencies>
@@ -84,9 +85,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mn.web3.login</groupId>
-            <artifactId>lib</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.moonstoneid</groupId>
+            <artifactId>siwe-java</artifactId>
+            <version>${siwejava.version}</version>
         </dependency>
     </dependencies>
 
