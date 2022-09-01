@@ -26,8 +26,6 @@ public final class KeyPairUtils {
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
 
-            System.out.println(toPCKS1String((RSAPublicKey)keyPair.getPublic()));
-            System.out.println(toPCKS1String((RSAPrivateKey)keyPair.getPrivate()));
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

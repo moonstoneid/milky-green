@@ -1,11 +1,16 @@
 package com.moonstoneid.web3login.api.controller;
 
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 import com.moonstoneid.web3login.api.doc.KeyPairApi;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
+import com.moonstoneid.web3login.config.CustomJWKSource;
 import com.moonstoneid.web3login.jose.KeyPairUtils;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,17 +22,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api")
 public class KeyPairController implements KeyPairApi {
 
+    private final CustomJWKSource jwkSource;
+
+    private KeyPairController(CustomJWKSource jwkSource) {
+        this.jwkSource = jwkSource;
+    }
+
     @Override
     @GetMapping(value = "/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM getKeyPair() {
-
-        return null;
+        RSAKey keyPair = jwkSource.getRsaKey();
+        try {
+            return toApiModel(keyPair);
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     @PutMapping(value = "/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM updateKeyPair(@RequestBody UpdateKeyPairAM updateKeyPair) {
         validateUpdateKeyPairRequest(updateKeyPair);
+        try {
+            RSAPublicKey pubKey = KeyPairUtils.toRSAPublicKey(updateKeyPair.getPublicKey());
+            RSAPrivateKey privKey = KeyPairUtils.toRSAPrivateKey(updateKeyPair.getPrivateKey());
+            RSAKey keyPair = new RSAKey.Builder(pubKey).privateKey(privKey).build();
+            jwkSource.setRsaKey(keyPair);
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 
@@ -56,6 +80,13 @@ public class KeyPairController implements KeyPairApi {
         } catch (InvalidKeySpecException e) {
             throw new ValidationException("privateKey cannot be parsed.");
         }
+    }
+
+    private static KeyPairAM toApiModel(RSAKey keyPair) throws JOSEException {
+        KeyPairAM model = new KeyPairAM();
+        model.setPublicKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPublicKey()));
+        model.setPrivateKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPrivateKey()));
+        return model;
     }
 
 }
