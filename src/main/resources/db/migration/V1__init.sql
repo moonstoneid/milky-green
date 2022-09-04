@@ -60,3 +60,10 @@ CREATE TABLE oauth2_authorization_consent (
   authorities VARCHAR(1000) NOT NULL,
   PRIMARY KEY (registered_client_id, principal_name)
 );
+
+CREATE TABLE jwk_keypair (
+  id VARCHAR(100) NOT NULL,
+  private_key VARCHAR(2000) DEFAULT NULL,
+  public_key VARCHAR(2000) DEFAULT NULL,
+  PRIMARY KEY (id)
+);

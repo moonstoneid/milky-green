@@ -31,7 +31,7 @@ public class KeyPairController implements KeyPairApi {
     @Override
     @GetMapping(value = "/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM getKeyPair() {
-        RSAKey keyPair = jwkSource.getRsaKey();
+        RSAKey keyPair = jwkSource.getKeyPair();
         try {
             return toApiModel(keyPair);
         } catch (JOSEException e) {
@@ -47,17 +47,18 @@ public class KeyPairController implements KeyPairApi {
             RSAPublicKey pubKey = KeyPairUtils.toRSAPublicKey(updateKeyPair.getPublicKey());
             RSAPrivateKey privKey = KeyPairUtils.toRSAPrivateKey(updateKeyPair.getPrivateKey());
             RSAKey keyPair = new RSAKey.Builder(pubKey).privateKey(privKey).build();
-            jwkSource.setRsaKey(keyPair);
-        } catch (InvalidKeySpecException e) {
+            jwkSource.setKeyPair(keyPair);
+            return toApiModel(keyPair);
+        } catch (InvalidKeySpecException | JOSEException e) {
             throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     private void validateUpdateKeyPairRequest(UpdateKeyPairAM updateKeyPair) {
         validatePublicKey(updateKeyPair.getPublicKey());
         validatePrivateKey(updateKeyPair.getPrivateKey());
+
+        // TODO: validate if private key and public key generate a valid keypair
     }
 
     private void validatePublicKey(String publicKey) {
