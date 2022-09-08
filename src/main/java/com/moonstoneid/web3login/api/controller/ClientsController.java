@@ -11,12 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.moonstoneid.web3login.api.model.UpdateClient;
+import com.moonstoneid.web3login.api.model.UpdateClientAM;
 import org.apache.commons.lang3.RandomStringUtils;
 import com.moonstoneid.web3login.AppConstants;
-import com.moonstoneid.web3login.api.model.Client;
+import com.moonstoneid.web3login.api.model.ClientAM;
 import com.moonstoneid.web3login.api.doc.ClientsApi;
-import com.moonstoneid.web3login.api.model.CreateClient;
+import com.moonstoneid.web3login.api.model.CreateClientAM;
 import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -49,14 +49,14 @@ public class ClientsController implements ClientsApi {
 
     @Override
     @GetMapping(value = "/clients", produces = { "application/json" })
-    public @ResponseBody List<Client> getClients() {
+    public @ResponseBody List<ClientAM> getClients() {
         List<RegisteredClient> clients = registeredClientRepository.getAll();
         return toApiModel(clients);
     }
 
     @Override
     @PostMapping(value = "/clients", produces = { "application/json" })
-    public @ResponseBody Client createClient(@RequestBody CreateClient apiCreateClient) {
+    public @ResponseBody ClientAM createClient(@RequestBody CreateClientAM apiCreateClient) {
         validateCreateClientRequest(apiCreateClient);
 
         checkClientIdIsNotTaken(null, apiCreateClient.getClientId());
@@ -76,7 +76,7 @@ public class ClientsController implements ClientsApi {
 
     @Override
     @GetMapping(value = "/clients/{id}", produces = { "application/json" })
-    public @ResponseBody Client getClient(@PathVariable("id") String id) {
+    public @ResponseBody ClientAM getClient(@PathVariable("id") String id) {
         RegisteredClient client = registeredClientRepository.findById(id);
         checkClientWasFound(id, client);
         return toApiModel(client);
@@ -84,8 +84,8 @@ public class ClientsController implements ClientsApi {
 
     @Override
     @PutMapping(value = "/clients/{id}", produces = { "application/json" })
-    public @ResponseBody Client updateClient(@PathVariable("id") String id,
-            @RequestBody UpdateClient apiUpdateClient) {
+    public @ResponseBody ClientAM updateClient(@PathVariable("id") String id,
+                                               @RequestBody UpdateClientAM apiUpdateClient) {
         validateUpdateClientRequest(apiUpdateClient);
 
         RegisteredClient client = registeredClientRepository.findById(id);
@@ -108,7 +108,7 @@ public class ClientsController implements ClientsApi {
         registeredClientRepository.delete(client);
     }
 
-    private void validateCreateClientRequest(CreateClient apiCreateClient) {
+    private void validateCreateClientRequest(CreateClientAM apiCreateClient) {
         validateClientId(apiCreateClient.getClientId());
         if (apiCreateClient.getClientSecret() != null) {
             validateClientSecret(apiCreateClient.getClientSecret());
@@ -125,7 +125,7 @@ public class ClientsController implements ClientsApi {
         }
     }
 
-    private void validateUpdateClientRequest(UpdateClient apiUpdateClient) {
+    private void validateUpdateClientRequest(UpdateClientAM apiUpdateClient) {
         validateClientId(apiUpdateClient.getClientId());
         validateClientSecret(apiUpdateClient.getClientSecret());
         validateClientName(apiUpdateClient.getClientName());
@@ -258,16 +258,16 @@ public class ClientsController implements ClientsApi {
         return RandomStringUtils.random(CLIENT_SECRET_DEFAULT_LENGTH, true, true);
     }
 
-    private static List<Client> toApiModel(List<RegisteredClient> clients) {
-        List<Client> apiClients = new ArrayList<>();
+    private static List<ClientAM> toApiModel(List<RegisteredClient> clients) {
+        List<ClientAM> apiClients = new ArrayList<>();
         for (RegisteredClient client : clients) {
             apiClients.add(toApiModel(client));
         }
         return apiClients;
     }
 
-    private static Client toApiModel(RegisteredClient client) {
-        Client apiClient = new Client();
+    private static ClientAM toApiModel(RegisteredClient client) {
+        ClientAM apiClient = new ClientAM();
         apiClient.setId(client.getId());
         apiClient.setClientId(client.getClientId());
         apiClient.setClientSecret(removeClientSecretPrefix(client.getClientSecret()));
@@ -286,7 +286,7 @@ public class ClientsController implements ClientsApi {
         return apiClient;
     }
 
-    private static RegisteredClient toModel(String id, CreateClient apiCreateClient,
+    private static RegisteredClient toModel(String id, CreateClientAM apiCreateClient,
             String clientSecret) {
         return buildClient(id, apiCreateClient.getClientId(), clientSecret,
                 apiCreateClient.getClientName(), apiCreateClient.getAuthorizationGrantTypes(),
@@ -296,7 +296,7 @@ public class ClientsController implements ClientsApi {
                 apiCreateClient.getIsReuseRefreshTokens());
     }
 
-    private static RegisteredClient toModel(String id, UpdateClient apiUpdateClient) {
+    private static RegisteredClient toModel(String id, UpdateClientAM apiUpdateClient) {
         return buildClient(id, apiUpdateClient.getClientId(), apiUpdateClient.getClientSecret(),
                 apiUpdateClient.getClientName(), apiUpdateClient.getAuthorizationGrantTypes(),
                 apiUpdateClient.getRedirectUris(), apiUpdateClient.getScopes(),

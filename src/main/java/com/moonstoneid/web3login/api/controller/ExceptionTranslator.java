@@ -1,7 +1,7 @@
 package com.moonstoneid.web3login.api.controller;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.moonstoneid.web3login.api.model.ErrorResponse;
+import com.moonstoneid.web3login.api.model.ErrorResponseAM;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +13,7 @@ public class ExceptionTranslator {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ErrorResponse httpReadError(HttpMessageNotReadableException ex) {
+    public ErrorResponseAM httpReadError(HttpMessageNotReadableException ex) {
         String message;
         Throwable c = ex.getRootCause();
         if (c instanceof JsonParseException) {
@@ -21,31 +21,31 @@ public class ExceptionTranslator {
         } else {
             message = ex.getMessage();
         }
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message);
+        return new ErrorResponseAM(HttpStatus.BAD_REQUEST.value(), message);
     }
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public ErrorResponse validationError(ValidationException ex) {
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    public ErrorResponseAM validationError(ValidationException ex) {
+        return new ErrorResponseAM(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorResponse notFoundError(NotFoundException ex) {
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    public ErrorResponseAM notFoundError(NotFoundException ex) {
+        return new ErrorResponseAM(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public ErrorResponse conflictError(ConflictException ex) {
-        return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+    public ErrorResponseAM conflictError(ConflictException ex) {
+        return new ErrorResponseAM(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse internalError(Exception ex) {
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    public ErrorResponseAM internalError(Exception ex) {
+        return new ErrorResponseAM(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
     }
 
 }

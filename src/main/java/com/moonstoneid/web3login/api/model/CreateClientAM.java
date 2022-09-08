@@ -2,6 +2,7 @@ package com.moonstoneid.web3login.api.model;
 
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateClient {
+@Schema(name = "CreateClient")
+public class CreateClientAM {
 
     private String clientId;
     private String clientSecret;

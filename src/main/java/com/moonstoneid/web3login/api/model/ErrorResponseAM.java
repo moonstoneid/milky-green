@@ -1,5 +1,6 @@
 package com.moonstoneid.web3login.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponse {
+@Schema(name = "ErrorResponse")
+public class ErrorResponseAM {
 
     private int code;
     private String message;

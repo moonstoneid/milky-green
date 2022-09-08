@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moonstoneid.web3login.api.model.ErrorResponse;
+import com.moonstoneid.web3login.api.model.ErrorResponseAM;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import com.moonstoneid.web3login.AppConstants;
@@ -81,7 +81,7 @@ public class ApiKeyAuthenticationFilter extends GenericFilterBean {
         response.setStatus(status.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        ErrorResponse errorResponse = new ErrorResponse(status.value(), authException.getMessage());
+        ErrorResponseAM errorResponse = new ErrorResponseAM(status.value(), authException.getMessage());
 
         objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }
