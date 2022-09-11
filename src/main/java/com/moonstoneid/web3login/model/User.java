@@ -21,6 +21,9 @@ public class User {
     @Column(name = "username", length = 50)
     private String username;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "username"))
     @Column(name = "authority", length = 100)
