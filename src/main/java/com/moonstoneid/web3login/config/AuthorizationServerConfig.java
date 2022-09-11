@@ -1,17 +1,12 @@
 package com.moonstoneid.web3login.config;
 
+import com.moonstoneid.web3login.repo.AuthorizationConsentRepository;
+import com.moonstoneid.web3login.repo.AuthorizationRepository;
+import com.moonstoneid.web3login.repo.ClientRepository;
 import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
 import com.moonstoneid.web3login.service.JpaAuthorizationConsentService;
 import com.moonstoneid.web3login.service.JpaAuthorizationService;
 import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.moonstoneid.web3login.jose.Jwks;
-import com.moonstoneid.web3login.repo.AuthorizationConsentRepository;
-import com.moonstoneid.web3login.repo.AuthorizationRepository;
-import com.moonstoneid.web3login.repo.ClientRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -67,13 +62,6 @@ public class AuthorizationServerConfig {
             JpaRegisteredClientRepository registeredClientRepository) {
         return new JpaAuthorizationConsentService(authorizationConsentRepository,
                 registeredClientRepository);
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        RSAKey rsaKey = Jwks.generateRsa();
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
     }
 
     @Bean
