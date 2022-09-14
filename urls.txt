@@ -1,2 +1,3 @@
 http://127.0.0.1:9000/oauth2/authorize?client_id=test-client&response_type=code&scope=message.read&state=12345&redirect_uri=http://127.0.0.1:8080/authorized
 http://127.0.0.1:9000/oauth2/authorize?client_id=test-client&response_type=code&scope=openid&state=12345&redirect_uri=http://127.0.0.1:8080/authorized
+http://127.0.0.1:9000/oauth2/authorize?client_id=test-client&response_type=code&scope=openid%20profile&state=12345&redirect_uri=http://127.0.0.1:8080/authorized
