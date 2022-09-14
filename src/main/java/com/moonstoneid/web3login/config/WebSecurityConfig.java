@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -44,11 +45,13 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                     .anyRequest().permitAll()
                     .and()
-                .csrf().disable()
+                .csrf()
+                    .disable()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
-                .logout().disable();
+                .logout()
+                    .disable();
         }
 
     }
@@ -66,11 +69,13 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                     .anyRequest().permitAll()
                     .and()
-                .csrf().disable()
+                .csrf()
+                    .disable()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
-                .logout().disable();
+                .logout()
+                    .disable();
         }
 
     }
@@ -93,7 +98,8 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                     .anyRequest().hasAuthority(AppConstants.API_KEY_ROLE)
                     .and()
-                .csrf().disable()
+                .csrf()
+                    .disable()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
@@ -135,6 +141,7 @@ public class WebSecurityConfig {
                 .csrf()
                     .ignoringRequestMatchers(endpointsMatcher)
                     .and()
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .apply(authorizationServerConfigurer);
         }
 

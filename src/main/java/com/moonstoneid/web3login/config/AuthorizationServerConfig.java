@@ -7,12 +7,16 @@ import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
 import com.moonstoneid.web3login.service.JpaAuthorizationConsentService;
 import com.moonstoneid.web3login.service.JpaAuthorizationService;
 import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
@@ -62,6 +66,11 @@ public class AuthorizationServerConfig {
             JpaRegisteredClientRepository registeredClientRepository) {
         return new JpaAuthorizationConsentService(authorizationConsentRepository,
                 registeredClientRepository);
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
     @Bean

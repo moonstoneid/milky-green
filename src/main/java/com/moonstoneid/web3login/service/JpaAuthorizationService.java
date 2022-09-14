@@ -3,6 +3,7 @@ package com.moonstoneid.web3login.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -115,9 +116,11 @@ public class JpaAuthorizationService extends BaseOAuthService implements OAuth2A
         }
 
         if (entity.getAccessTokenValue() != null) {
+            Set<String> accessTokenScopes = StringUtils.commaDelimitedListToSet(
+                    entity.getAccessTokenScopes());
             OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                     entity.getAccessTokenValue(), entity.getAccessTokenIssuedAt(),
-                    entity.getAccessTokenExpiresAt());
+                    entity.getAccessTokenExpiresAt(), accessTokenScopes);
             builder.token(accessToken, metadata -> metadata.putAll(parseMap(
                     entity.getAccessTokenMetadata())));
         }
