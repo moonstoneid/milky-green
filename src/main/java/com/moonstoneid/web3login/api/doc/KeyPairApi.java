@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface KeyPairApi {
 
     @Operation(
-        summary = "Get the keypair which is used to sign OIDC claims",
+        summary = "Get token signing keypair",
         tags = { "keypair" },
         security = { @SecurityRequirement(name = "apiKey") }
     )
@@ -36,7 +36,7 @@ public interface KeyPairApi {
     KeyPairAM getKeyPair();
 
     @Operation(
-        summary = "Update keypair",
+        summary = "Update token signing keypair",
         tags = { "keypair" },
         security = { @SecurityRequirement(name = "apiKey") }
     )

@@ -106,7 +106,7 @@ public interface ClientsApi {
         )
     })
     ClientAM updateClient(@Parameter(description = "id", required = true) String id,
-                          @Parameter(required = true) UpdateClientAM updateClient);
+            @Parameter(required = true) UpdateClientAM updateClient);
 
     @Operation(
         summary = "Delete an OAuth client by its ID",
