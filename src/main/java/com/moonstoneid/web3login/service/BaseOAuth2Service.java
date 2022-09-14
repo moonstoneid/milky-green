@@ -11,12 +11,12 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
 
-public abstract class BaseOAuthService {
+public abstract class BaseOAuth2Service {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public BaseOAuthService() {
-        ClassLoader classLoader = JpaAuthorizationService.class.getClassLoader();
+    public BaseOAuth2Service() {
+        ClassLoader classLoader = BaseOAuth2Service.class.getClassLoader();
 
         objectMapper.registerModules(SecurityJackson2Modules.getModules(classLoader));
         objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());

@@ -6,7 +6,7 @@ import javax.servlet.Filter;
 import com.moonstoneid.web3login.security.ApiKeyAuthenticationFilter;
 import com.moonstoneid.web3login.security.Web3AuthenticationFilter;
 import com.moonstoneid.web3login.security.Web3AuthenticationProvider;
-import com.moonstoneid.web3login.service.JpaUserDetailsService;
+import com.moonstoneid.web3login.service.UserDetailsService;
 import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.AppProperties;
 import com.moonstoneid.web3login.repo.UserRepository;
@@ -23,7 +23,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -151,9 +150,9 @@ public class WebSecurityConfig {
     @Order(5)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
-        private final UserDetailsService userDetailsService;
+        private final org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
 
-        public UserConfig(UserDetailsService userDetailsService) {
+        public UserConfig(org.springframework.security.core.userdetails.UserDetailsService userDetailsService) {
             this.userDetailsService = userDetailsService;
         }
 
@@ -206,7 +205,7 @@ public class WebSecurityConfig {
     @Bean
     @Primary
     public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return new JpaUserDetailsService(userRepository);
+        return new UserDetailsService(userRepository);
     }
 
 }

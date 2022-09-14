@@ -7,8 +7,8 @@ import java.security.spec.InvalidKeySpecException;
 import com.moonstoneid.web3login.api.doc.KeyPairApi;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
-import com.moonstoneid.web3login.config.CustomJWKSource;
-import com.moonstoneid.web3login.jose.KeyPairUtils;
+import com.moonstoneid.web3login.utils.KeyPairUtils;
+import com.moonstoneid.web3login.service.KeyPairService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.RSAKey;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,41 +22,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api")
 public class KeyPairController implements KeyPairApi {
 
-    private final CustomJWKSource jwkSource;
+    private final KeyPairService keyPairService;
 
-    private KeyPairController(CustomJWKSource jwkSource) {
-        this.jwkSource = jwkSource;
+    private KeyPairController(KeyPairService keyPairService) {
+        this.keyPairService = keyPairService;
     }
 
     @Override
     @GetMapping(value = "/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM getKeyPair() {
-        RSAKey keyPair = jwkSource.getKeyPair();
-        try {
-            return toApiModel(keyPair);
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
-        }
+        RSAKey keyPair = keyPairService.get();
+        return toApiModel(keyPair);
     }
 
     @Override
     @PutMapping(value = "/keypair", produces = { "application/json" })
-    public @ResponseBody KeyPairAM updateKeyPair(@RequestBody UpdateKeyPairAM updateKeyPair) {
-        validateUpdateKeyPairRequest(updateKeyPair);
-        try {
-            RSAPublicKey pubKey = KeyPairUtils.toRSAPublicKey(updateKeyPair.getPublicKey());
-            RSAPrivateKey privKey = KeyPairUtils.toRSAPrivateKey(updateKeyPair.getPrivateKey());
-            RSAKey keyPair = new RSAKey.Builder(pubKey).privateKey(privKey).build();
-            jwkSource.setKeyPair(keyPair);
-            return toApiModel(keyPair);
-        } catch (InvalidKeySpecException | JOSEException e) {
-            throw new RuntimeException(e);
-        }
+    public @ResponseBody KeyPairAM updateKeyPair(@RequestBody UpdateKeyPairAM apiUpdateKeyPair) {
+        validateUpdateKeyPairRequest(apiUpdateKeyPair);
+
+        RSAKey keyPair = toModel(apiUpdateKeyPair);
+
+        keyPairService.save(keyPair);
+
+        return toApiModel(keyPair);
     }
 
-    private void validateUpdateKeyPairRequest(UpdateKeyPairAM updateKeyPair) {
-        validatePublicKey(updateKeyPair.getPublicKey());
-        validatePrivateKey(updateKeyPair.getPrivateKey());
+    private void validateUpdateKeyPairRequest(UpdateKeyPairAM apiUpdateKeyPair) {
+        validatePublicKey(apiUpdateKeyPair.getPublicKey());
+        validatePrivateKey(apiUpdateKeyPair.getPrivateKey());
 
         // TODO: validate if private key and public key generate a valid keypair
     }
@@ -83,11 +76,25 @@ public class KeyPairController implements KeyPairApi {
         }
     }
 
-    private static KeyPairAM toApiModel(RSAKey keyPair) throws JOSEException {
-        KeyPairAM model = new KeyPairAM();
-        model.setPublicKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPublicKey()));
-        model.setPrivateKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPrivateKey()));
-        return model;
+    private static KeyPairAM toApiModel(RSAKey keyPair) {
+        try {
+            KeyPairAM model = new KeyPairAM();
+            model.setPublicKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPublicKey()));
+            model.setPrivateKey(KeyPairUtils.toPCKS1String(keyPair.toRSAPrivateKey()));
+            return model;
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static RSAKey toModel(UpdateKeyPairAM apiUpdateKeyPair) {
+        try {
+            RSAPublicKey pubKey = KeyPairUtils.toRSAPublicKey(apiUpdateKeyPair.getPublicKey());
+            RSAPrivateKey privKey = KeyPairUtils.toRSAPrivateKey(apiUpdateKeyPair.getPrivateKey());
+            return new RSAKey.Builder(pubKey).privateKey(privKey).build();
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

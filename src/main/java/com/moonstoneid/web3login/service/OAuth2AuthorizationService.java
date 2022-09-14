@@ -18,20 +18,18 @@ import org.springframework.security.oauth2.core.OAuth2TokenType;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class JpaAuthorizationService extends BaseOAuthService implements OAuth2AuthorizationService {
+public class OAuth2AuthorizationService extends BaseOAuth2Service implements
+        org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService {
 
     private final AuthorizationRepository authorizationRepository;
-    private final JpaRegisteredClientRepository registeredClientRepository;
+    private final RegisteredClientRepository registeredClientRepository;
 
-    public JpaAuthorizationService(AuthorizationRepository authorizationRepository,
-            JpaRegisteredClientRepository registeredClientRepository) {
-        Assert.notNull(authorizationRepository, "authorizationRepository cannot be null");
-        Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
+    public OAuth2AuthorizationService(AuthorizationRepository authorizationRepository,
+            RegisteredClientRepository registeredClientRepository) {
         this.authorizationRepository = authorizationRepository;
         this.registeredClientRepository = registeredClientRepository;
     }

@@ -3,10 +3,13 @@ package com.moonstoneid.web3login.config;
 import com.moonstoneid.web3login.repo.AuthorizationConsentRepository;
 import com.moonstoneid.web3login.repo.AuthorizationRepository;
 import com.moonstoneid.web3login.repo.ClientRepository;
+import com.moonstoneid.web3login.repo.KeyPairRepository;
 import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
-import com.moonstoneid.web3login.service.JpaAuthorizationConsentService;
-import com.moonstoneid.web3login.service.JpaAuthorizationService;
-import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
+import com.moonstoneid.web3login.service.KeyPairService;
+import com.moonstoneid.web3login.service.OAuth2AuthorizationConsentService;
+import com.moonstoneid.web3login.service.OAuth2AuthorizationService;
+import com.moonstoneid.web3login.service.RegisteredClientRepository;
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
@@ -47,25 +50,36 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Primary
-    public JpaRegisteredClientRepository registeredClientRepository(ClientRepository clientRepository) {
-        return new JpaRegisteredClientRepository(clientRepository);
+    public RegisteredClientRepository registeredClientRepository(ClientRepository clientRepository) {
+        return new RegisteredClientRepository(clientRepository);
     }
 
     @Bean
     @Primary
-    public JpaAuthorizationService authorizationService(
+    public OAuth2AuthorizationService authorizationService(
             AuthorizationRepository authorizationRepository,
-            JpaRegisteredClientRepository registeredClientRepository) {
-        return new JpaAuthorizationService(authorizationRepository, registeredClientRepository);
+            RegisteredClientRepository registeredClientRepository) {
+        return new OAuth2AuthorizationService(authorizationRepository, registeredClientRepository);
     }
 
     @Bean
     @Primary
-    public JpaAuthorizationConsentService authorizationConsentService(
+    public OAuth2AuthorizationConsentService authorizationConsentService(
             AuthorizationConsentRepository authorizationConsentRepository,
-            JpaRegisteredClientRepository registeredClientRepository) {
-        return new JpaAuthorizationConsentService(authorizationConsentRepository,
+            RegisteredClientRepository registeredClientRepository) {
+        return new OAuth2AuthorizationConsentService(authorizationConsentRepository,
                 registeredClientRepository);
+    }
+
+    @Bean
+    public KeyPairService keyPairService(KeyPairRepository keyPairRepository) {
+        return new KeyPairService(keyPairRepository);
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> jwkSource(KeyPairService keyPairService) {
+        return ((jwkSelector, securityContext) ->
+                jwkSelector.select(new JWKSet(keyPairService.get())));
     }
 
     @Bean

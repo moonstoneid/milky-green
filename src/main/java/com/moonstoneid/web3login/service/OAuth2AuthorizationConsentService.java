@@ -11,21 +11,19 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class JpaAuthorizationConsentService extends BaseOAuthService implements
-        OAuth2AuthorizationConsentService {
+public class OAuth2AuthorizationConsentService extends BaseOAuth2Service implements
+        org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService {
 
     private final AuthorizationConsentRepository authorizationConsentRepository;
-    private final JpaRegisteredClientRepository registeredClientRepository;
+    private final RegisteredClientRepository registeredClientRepository;
 
-    public JpaAuthorizationConsentService(AuthorizationConsentRepository authorizationConsentRepository,
-            JpaRegisteredClientRepository registeredClientRepository) {
-        Assert.notNull(authorizationConsentRepository, "authorizationConsentRepository cannot be null");
-        Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
+    public OAuth2AuthorizationConsentService(
+            AuthorizationConsentRepository authorizationConsentRepository,
+            RegisteredClientRepository registeredClientRepository) {
         this.authorizationConsentRepository = authorizationConsentRepository;
         this.registeredClientRepository = registeredClientRepository;
     }

@@ -17,7 +17,7 @@ import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.api.model.ClientAM;
 import com.moonstoneid.web3login.api.doc.ClientsApi;
 import com.moonstoneid.web3login.api.model.CreateClientAM;
-import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
+import com.moonstoneid.web3login.service.RegisteredClientRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -41,9 +41,9 @@ public class ClientsController implements ClientsApi {
     private static final String CLIENT_SECRET_PREFIX = "{noop}";
     private static final int CLIENT_SECRET_DEFAULT_LENGTH = 32;
 
-    private final JpaRegisteredClientRepository registeredClientRepository;
+    private final RegisteredClientRepository registeredClientRepository;
 
-    public ClientsController(JpaRegisteredClientRepository registeredClientRepository) {
+    public ClientsController(RegisteredClientRepository registeredClientRepository) {
         this.registeredClientRepository = registeredClientRepository;
     }
 
@@ -68,9 +68,7 @@ public class ClientsController implements ClientsApi {
         }
 
         RegisteredClient client = toModel(id, apiCreateClient, clientSecret);
-
         registeredClientRepository.save(client);
-
         return toApiModel(client);
     }
 
@@ -85,17 +83,16 @@ public class ClientsController implements ClientsApi {
     @Override
     @PutMapping(value = "/clients/{id}", produces = { "application/json" })
     public @ResponseBody ClientAM updateClient(@PathVariable("id") String id,
-                                               @RequestBody UpdateClientAM apiUpdateClient) {
+            @RequestBody UpdateClientAM apiUpdateClient) {
         validateUpdateClientRequest(apiUpdateClient);
 
         RegisteredClient client = registeredClientRepository.findById(id);
+
         checkClientWasFound(id, client);
         checkClientIdIsNotTaken(id, apiUpdateClient.getClientId());
 
         client = toModel(id, apiUpdateClient);
-
         registeredClientRepository.save(client);
-
         return toApiModel(client);
     }
 

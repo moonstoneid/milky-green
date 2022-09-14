@@ -1,10 +1,14 @@
 package com.moonstoneid.web3login.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.moonstoneid.web3login.api.doc.UsersApi;
 import com.moonstoneid.web3login.api.model.UserAM;
 import com.moonstoneid.web3login.api.model.CreateUserAM;
 import com.moonstoneid.web3login.model.User;
-import com.moonstoneid.web3login.service.JpaUserDetailsService;
+import com.moonstoneid.web3login.service.UserDetailsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +20,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 @RestController
 @RequestMapping(path = "/api")
 public class UsersController implements UsersApi {
 
-    private final JpaUserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
-    public UsersController(JpaUserDetailsService userDetailsService) {
+    public UsersController(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -49,12 +49,11 @@ public class UsersController implements UsersApi {
     @PostMapping(value = "/users", produces = { "application/json" })
     public @ResponseBody UserAM createUser(@RequestBody CreateUserAM apiCreateUser) {
         validateCreateUserRequest(apiCreateUser);
+
         checkUsernameIsNotTaken(apiCreateUser.getUserName());
 
         User user = toModel(apiCreateUser);
-
         userDetailsService.save(user);
-
         return toApiModel(user);
     }
 

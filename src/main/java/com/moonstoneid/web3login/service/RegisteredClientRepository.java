@@ -9,19 +9,17 @@ import java.util.stream.Collectors;
 import com.moonstoneid.web3login.model.Client;
 import com.moonstoneid.web3login.repo.ClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-public class JpaRegisteredClientRepository extends BaseOAuthService
-        implements RegisteredClientRepository {
+public class RegisteredClientRepository extends BaseOAuth2Service implements
+        org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository {
 
     private final ClientRepository clientRepository;
 
-    public JpaRegisteredClientRepository(ClientRepository clientRepository) {
-        Assert.notNull(clientRepository, "clientRepository cannot be null");
+    public RegisteredClientRepository(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 

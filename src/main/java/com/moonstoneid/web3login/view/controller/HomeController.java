@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.moonstoneid.web3login.security.Web3AuthenticationToken;
 import com.moonstoneid.web3login.security.Web3Principal;
-import com.moonstoneid.web3login.service.JpaAuthorizationConsentService;
-import com.moonstoneid.web3login.service.JpaAuthorizationService;
-import com.moonstoneid.web3login.service.JpaRegisteredClientRepository;
+import com.moonstoneid.web3login.service.OAuth2AuthorizationConsentService;
+import com.moonstoneid.web3login.service.OAuth2AuthorizationService;
+import com.moonstoneid.web3login.service.RegisteredClientRepository;
 import com.moonstoneid.web3login.view.model.AuthorizationVM;
 import com.moonstoneid.web3login.view.model.AuthorizationConsentVM;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -54,13 +54,13 @@ public class HomeController {
     private static final String FORM_PARAM_CLIENT_ID = "client_id";
     private static final String FORM_PARAM_AUTHORIZATION_ID = "authorization_id";
 
-    private final JpaRegisteredClientRepository clientRepository;
-    private final JpaAuthorizationService authorizationService;
-    private final JpaAuthorizationConsentService authorizationConsentService;
+    private final RegisteredClientRepository clientRepository;
+    private final OAuth2AuthorizationService authorizationService;
+    private final OAuth2AuthorizationConsentService authorizationConsentService;
 
-    public HomeController(JpaRegisteredClientRepository clientRepository,
-            JpaAuthorizationService authorizationService,
-            JpaAuthorizationConsentService authorizationConsentService) {
+    public HomeController(RegisteredClientRepository clientRepository,
+            OAuth2AuthorizationService authorizationService,
+            OAuth2AuthorizationConsentService authorizationConsentService) {
         this.clientRepository = clientRepository;
         this.authorizationService = authorizationService;
         this.authorizationConsentService = authorizationConsentService;
