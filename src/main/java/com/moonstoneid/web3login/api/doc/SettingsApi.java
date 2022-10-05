@@ -1,6 +1,5 @@
 package com.moonstoneid.web3login.api.doc;
 
-
 import com.moonstoneid.web3login.api.model.ErrorResponseAM;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
@@ -13,12 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "keypair", description = "KeyPair API")
-public interface KeyPairApi {
+@Tag(name = "settings", description = "Settings API")
+public interface SettingsApi {
 
     @Operation(
         summary = "Get token signing keypair",
-        tags = { "keypair" },
+        tags = { "settings" },
         security = { @SecurityRequirement(name = "apiKey") }
     )
     @ApiResponses({
@@ -37,7 +36,7 @@ public interface KeyPairApi {
 
     @Operation(
         summary = "Update token signing keypair",
-        tags = { "keypair" },
+        tags = { "settings" },
         security = { @SecurityRequirement(name = "apiKey") }
     )
     @ApiResponses({

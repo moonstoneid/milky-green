@@ -4,7 +4,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
-import com.moonstoneid.web3login.api.doc.KeyPairApi;
+import com.moonstoneid.web3login.api.doc.SettingsApi;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
 import com.moonstoneid.web3login.utils.KeyPairUtils;
@@ -20,23 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api")
-public class KeyPairController implements KeyPairApi {
+public class SettingsController implements SettingsApi {
 
     private final KeyPairService keyPairService;
 
-    private KeyPairController(KeyPairService keyPairService) {
+    private SettingsController(KeyPairService keyPairService) {
         this.keyPairService = keyPairService;
     }
 
     @Override
-    @GetMapping(value = "/keypair", produces = { "application/json" })
+    @GetMapping(value = "/settings/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM getKeyPair() {
         RSAKey keyPair = keyPairService.get();
         return toApiModel(keyPair);
     }
 
     @Override
-    @PutMapping(value = "/keypair", produces = { "application/json" })
+    @PutMapping(value = "/settings/keypair", produces = { "application/json" })
     public @ResponseBody KeyPairAM updateKeyPair(@RequestBody UpdateKeyPairAM apiUpdateKeyPair) {
         validateUpdateKeyPairRequest(apiUpdateKeyPair);
 
