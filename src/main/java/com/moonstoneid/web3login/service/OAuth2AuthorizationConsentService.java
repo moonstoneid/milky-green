@@ -7,14 +7,18 @@ import java.util.stream.Collectors;
 
 import com.moonstoneid.web3login.model.AuthorizationConsent;
 import com.moonstoneid.web3login.repo.AuthorizationConsentRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsent;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+@Service
+@Primary
 public class OAuth2AuthorizationConsentService extends BaseOAuth2Service implements
         org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService {
 

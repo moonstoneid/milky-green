@@ -8,12 +8,16 @@ import java.util.stream.Collectors;
 
 import com.moonstoneid.web3login.model.Client;
 import com.moonstoneid.web3login.repo.ClientRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.config.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.config.TokenSettings;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+@Service
+@Primary
 public class RegisteredClientRepository extends BaseOAuth2Service implements
         org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository {
 

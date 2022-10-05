@@ -1,20 +1,12 @@
 package com.moonstoneid.web3login.config;
 
-import com.moonstoneid.web3login.repo.AuthorizationConsentRepository;
-import com.moonstoneid.web3login.repo.AuthorizationRepository;
-import com.moonstoneid.web3login.repo.ClientRepository;
-import com.moonstoneid.web3login.repo.KeyPairRepository;
 import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
 import com.moonstoneid.web3login.service.KeyPairService;
-import com.moonstoneid.web3login.service.OAuth2AuthorizationConsentService;
-import com.moonstoneid.web3login.service.OAuth2AuthorizationService;
-import com.moonstoneid.web3login.service.RegisteredClientRepository;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
@@ -46,34 +38,6 @@ public class AuthorizationServerConfig {
         Web3AuthenticationConverter converter = new Web3AuthenticationConverter();
         converter.setUserDetailsService(userDetailsService);
         return converter;
-    }
-
-    @Bean
-    @Primary
-    public RegisteredClientRepository registeredClientRepository(ClientRepository clientRepository) {
-        return new RegisteredClientRepository(clientRepository);
-    }
-
-    @Bean
-    @Primary
-    public OAuth2AuthorizationService authorizationService(
-            AuthorizationRepository authorizationRepository,
-            RegisteredClientRepository registeredClientRepository) {
-        return new OAuth2AuthorizationService(authorizationRepository, registeredClientRepository);
-    }
-
-    @Bean
-    @Primary
-    public OAuth2AuthorizationConsentService authorizationConsentService(
-            AuthorizationConsentRepository authorizationConsentRepository,
-            RegisteredClientRepository registeredClientRepository) {
-        return new OAuth2AuthorizationConsentService(authorizationConsentRepository,
-                registeredClientRepository);
-    }
-
-    @Bean
-    public KeyPairService keyPairService(KeyPairRepository keyPairRepository) {
-        return new KeyPairService(keyPairRepository);
     }
 
     @Bean

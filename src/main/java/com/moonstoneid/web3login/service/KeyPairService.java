@@ -11,8 +11,10 @@ import com.moonstoneid.web3login.model.KeyPair;
 import com.moonstoneid.web3login.repo.KeyPairRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+@Service
 public class KeyPairService {
 
     private final KeyPairRepository keyPairRepository;
