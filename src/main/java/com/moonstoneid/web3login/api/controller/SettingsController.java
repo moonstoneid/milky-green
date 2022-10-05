@@ -5,8 +5,11 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 import com.moonstoneid.web3login.api.doc.SettingsApi;
+import com.moonstoneid.web3login.api.model.GeneralSettingsAM;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
+import com.moonstoneid.web3login.api.model.UpdateGeneralSettingsAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
+import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.utils.KeyPairUtils;
 import com.moonstoneid.web3login.service.KeyPairService;
 import com.nimbusds.jose.JOSEException;
@@ -22,10 +25,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api")
 public class SettingsController implements SettingsApi {
 
+    private final SettingService settingService;
     private final KeyPairService keyPairService;
 
-    private SettingsController(KeyPairService keyPairService) {
+    private SettingsController(SettingService settingService, KeyPairService keyPairService) {
+        this.settingService = settingService;
         this.keyPairService = keyPairService;
+    }
+
+    @Override
+    @GetMapping(value = "/settings/general", produces = { "application/json" })
+    public @ResponseBody
+    GeneralSettingsAM getGeneralSettings() {
+        boolean isAllowAutoImport = settingService.isAllowAutoImport();
+
+        return toApiModel(isAllowAutoImport);
+    }
+
+    @Override
+    @PutMapping(value = "/settings/general", produces = { "application/json" })
+    public @ResponseBody GeneralSettingsAM updateGeneralSettings(
+            @RequestBody UpdateGeneralSettingsAM apiUpdateGeneralSettings) {
+        Boolean isAllowAutoImport = apiUpdateGeneralSettings.getIsAllowAutoImport();
+        if (isAllowAutoImport == null) {
+            isAllowAutoImport = false;
+        }
+
+        settingService.setAllowAutoImport(isAllowAutoImport);
+
+        return toApiModel(isAllowAutoImport);
     }
 
     @Override
@@ -74,6 +102,12 @@ public class SettingsController implements SettingsApi {
         } catch (InvalidKeySpecException e) {
             throw new ValidationException("privateKey cannot be parsed.");
         }
+    }
+
+    private static GeneralSettingsAM toApiModel(boolean isAllowAutoImport) {
+        GeneralSettingsAM apiGeneralSettings = new GeneralSettingsAM();
+        apiGeneralSettings.setIsAllowAutoImport(isAllowAutoImport);
+        return apiGeneralSettings;
     }
 
     private static KeyPairAM toApiModel(RSAKey keyPair) {

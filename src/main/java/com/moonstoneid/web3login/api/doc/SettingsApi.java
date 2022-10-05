@@ -1,7 +1,9 @@
 package com.moonstoneid.web3login.api.doc;
 
 import com.moonstoneid.web3login.api.model.ErrorResponseAM;
+import com.moonstoneid.web3login.api.model.GeneralSettingsAM;
 import com.moonstoneid.web3login.api.model.KeyPairAM;
+import com.moonstoneid.web3login.api.model.UpdateGeneralSettingsAM;
 import com.moonstoneid.web3login.api.model.UpdateKeyPairAM;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +16,40 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "settings", description = "Settings API")
 public interface SettingsApi {
+
+    @Operation(
+        summary = "Get general settings",
+        tags = { "settings" },
+        security = { @SecurityRequirement(name = "apiKey") }
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = GeneralSettingsAM.class))
+        )
+    })
+    GeneralSettingsAM getGeneralSettings();
+
+    @Operation(
+        summary = "Update general settings",
+        tags = { "settings" },
+        security = { @SecurityRequirement(name = "apiKey") }
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = GeneralSettingsAM.class))
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = @Content(schema = @Schema(implementation = ErrorResponseAM.class))
+        )
+    })
+    GeneralSettingsAM updateGeneralSettings(
+            @Parameter(required = true) UpdateGeneralSettingsAM updateGeneralSettings);
 
     @Operation(
         summary = "Get token signing keypair",

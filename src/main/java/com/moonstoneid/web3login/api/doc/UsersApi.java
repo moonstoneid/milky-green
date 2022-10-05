@@ -77,7 +77,6 @@ public interface UsersApi {
     })
     UserAM createUser(@Parameter(required = true) CreateUserAM createUser);
 
-
     @Operation(
         summary = "Delete a user by its username",
         tags = { "users" },
