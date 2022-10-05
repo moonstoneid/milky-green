@@ -8,6 +8,7 @@ import com.moonstoneid.web3login.security.Web3AuthenticationFilter;
 import com.moonstoneid.web3login.security.Web3AuthenticationProvider;
 import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.AppProperties;
+import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.service.UserService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -147,9 +148,11 @@ public class WebSecurityConfig {
     @Order(5)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
+        private final SettingService settingService;
         private final UserService userService;
 
-        public UserConfig(UserService userService) {
+        public UserConfig(SettingService settingService, UserService userService) {
+            this.settingService = settingService;
             this.userService = userService;
         }
 
@@ -193,6 +196,7 @@ public class WebSecurityConfig {
 
         private Web3AuthenticationProvider web3AuthenticationProvider() {
             Web3AuthenticationProvider provider = new Web3AuthenticationProvider();
+            provider.setSettingService(settingService);
             provider.setUserService(userService);
             return provider;
         }

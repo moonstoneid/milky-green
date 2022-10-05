@@ -1,3 +1,12 @@
+CREATE TABLE settings (
+  setting_name VARCHAR(50) NOT NULL,
+  setting_value VARCHAR(50) NOT NULL,
+  PRIMARY KEY (setting_name)
+);
+
+INSERT INTO settings (setting_name, setting_value)
+  VALUES ('allow_auto_import', 'true');
+
 CREATE TABLE users (
   username VARCHAR(50) NOT NULL,
   enabled INT NOT NULL,
