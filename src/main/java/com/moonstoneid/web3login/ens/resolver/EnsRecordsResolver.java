@@ -13,22 +13,21 @@ import org.web3j.protocol.Web3j;
  * Extends the {@link EnsResolver} to be able to call further methods of the resolver contract, in particular the
  * text(...) method, which retrieves text records stored for a given .eth domain.
  */
-
-public class RecordsResolver extends EnsResolver {
+public class EnsRecordsResolver extends EnsResolver {
 
     private final int addrLength;
 
-    public RecordsResolver(Web3j web3j, long syncThreshold, int addressLength) {
+    public EnsRecordsResolver(Web3j web3j, long syncThreshold, int addressLength) {
         super(web3j, syncThreshold, addressLength);
         addrLength = addressLength;
     }
 
-    public RecordsResolver(Web3j web3j, long syncThreshold) {
+    public EnsRecordsResolver(Web3j web3j, long syncThreshold) {
         super(web3j, syncThreshold);
         addrLength = 40;
     }
 
-    public RecordsResolver(Web3j web3j) {
+    public EnsRecordsResolver(Web3j web3j) {
         super(web3j);
         addrLength = 40;
     }
@@ -47,7 +46,7 @@ public class RecordsResolver extends EnsResolver {
     public String getTextRecordUsingAddress(String address, String textRecordKey) {
         if (WalletUtils.isValidAddress(address, addrLength)) {
             String ensName = reverseResolve(address);
-            return getTextRecord(ensName, TextRecords.AVATAR);
+            return getTextRecord(ensName, TextRecords.valueOf(textRecordKey));
         } else {
             throw new EnsResolutionException("Address is invalid: " + address);
         }
@@ -68,13 +67,13 @@ public class RecordsResolver extends EnsResolver {
         OffchainResolverContract resolver = obtainOffchainResolver(ensName);
         byte[] nameHash = NameHash.nameHashAsBytes(ensName);
 
-        String val;
+        String value;
         try {
-            val = resolver.text(nameHash, textRecordKey.getValue()).send();
-        } catch (Exception var7) {
-            throw new RuntimeException("Unable to execute Ethereum request", var7);
+            value = resolver.text(nameHash, textRecordKey.getValue()).send();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to execute Ethereum request", e);
         }
-        return val;
+        return value;
     }
 
 }

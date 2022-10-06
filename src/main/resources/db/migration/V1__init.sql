@@ -4,6 +4,15 @@ CREATE TABLE users (
   PRIMARY KEY (username)
 );
 
+CREATE TABLE user_ens (
+  username VARCHAR(100) NOT NULL,
+  ens_domain VARCHAR(255) DEFAULT NULL,
+  ens_email VARCHAR(255) DEFAULT NULL,
+  ens_url VARCHAR(1000) DEFAULT NULL,
+  ens_name VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (username)
+);
+
 CREATE TABLE authorities (
  username VARCHAR(50) NOT NULL,
  authority VARCHAR(100) NOT NULL,

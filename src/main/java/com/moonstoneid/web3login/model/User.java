@@ -1,14 +1,7 @@
 package com.moonstoneid.web3login.model;
 
 import java.util.List;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -28,5 +21,9 @@ public class User {
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "username"))
     @Column(name = "authority", length = 100)
     private List<String> authorities;
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "username")
+    private UserEns ens;
 
 }

@@ -1,8 +1,8 @@
 INSERT INTO users (username, enabled)
-  VALUES ('0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB', 1);
+  VALUES ('0x983110309620D911731Ac0932219af06091b6744', 1);
 
 INSERT INTO authorities (username, authority)
-  VALUES ('0x76384DEC5e05C2487b58470d5F40c3aeD2807AcB', 'user');
+  VALUES ('0x983110309620D911731Ac0932219af06091b6744', 'user');
 
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret,
     client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types,
