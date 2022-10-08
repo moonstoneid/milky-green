@@ -43,10 +43,9 @@ public class EnsUpdater {
         String username = user.getUsername();
         try {
             String ensDomain = ensResolver.reverseResolve(username);
-            if(ensDomain != null) {
+            if (ensDomain != null) {
                 setEnsInfo(user, ensDomain);
-            }
-            else {
+            } else {
                 removeEnsInfo(user);
             }
         } catch (Exception e) {
@@ -58,7 +57,7 @@ public class EnsUpdater {
 
     private void setEnsInfo (User user, String ensDomain) {
         UserEns ens = user.getEns();
-        if(ens == null) {
+        if (ens == null) {
             ens = new UserEns();
             ens.setUsername(user.getUsername());
         }

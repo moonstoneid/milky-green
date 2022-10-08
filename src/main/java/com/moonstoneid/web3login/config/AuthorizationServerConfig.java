@@ -5,10 +5,7 @@ import com.moonstoneid.web3login.repo.AuthorizationRepository;
 import com.moonstoneid.web3login.repo.ClientRepository;
 import com.moonstoneid.web3login.repo.KeyPairRepository;
 import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
-import com.moonstoneid.web3login.service.KeyPairService;
-import com.moonstoneid.web3login.service.OAuth2AuthorizationConsentService;
-import com.moonstoneid.web3login.service.OAuth2AuthorizationService;
-import com.moonstoneid.web3login.service.RegisteredClientRepository;
+import com.moonstoneid.web3login.service.*;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -19,8 +16,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 
 @Configuration
@@ -90,6 +91,16 @@ public class AuthorizationServerConfig {
     @Bean
     public ProviderSettings providerSettings() {
         return ProviderSettings.builder().issuer("http://localhost:9000").build();
+    }
+
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer(OidcUserInfoService userInfoService) {
+        return (context) -> {
+            if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
+                OidcUserInfo userInfo = userInfoService.loadUser(context.getPrincipal().getName());
+                context.getClaims().claims(claims -> claims.putAll(userInfo.getClaims()));
+            }
+        };
     }
 
 }
