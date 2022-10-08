@@ -49,6 +49,9 @@ public class AuthorizationConsentController {
             authorizedScopes = Collections.emptySet();
         }
         for (String requestedScope : StringUtils.delimitedListToStringArray(scope, " ")) {
+            if (requestedScope.equals(AppConstants.OAUTH_SCOPE_OPENID)) {
+                continue;
+            }
             if (authorizedScopes.contains(requestedScope)) {
                 previouslyApprovedScopes.add(requestedScope);
             } else {
@@ -81,19 +84,6 @@ public class AuthorizationConsentController {
             scopeDescriptions.put(
                     AppConstants.OAUTH_SCOPE_PROFILE,
                     "This application will be able to read your profile."
-            );
-            scopeDescriptions.put(
-                    AppConstants.OAUTH_SCOPE_READ,
-                    "This application will be able to read your message."
-            );
-            scopeDescriptions.put(
-                    AppConstants.OAUTH_SCOPE_WRITE,
-                    "This application will be able to add new messages. It will also be able to " +
-                            "edit and delete existing messages."
-            );
-            scopeDescriptions.put(
-                    "other.scope",
-                    "This is another scope example of a scope description."
             );
         }
 

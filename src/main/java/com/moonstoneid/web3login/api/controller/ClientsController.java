@@ -208,9 +208,7 @@ public class ClientsController implements ClientsApi {
                 throw new ValidationException("scopes cannot contain null or empty values.");
             }
             if (!Objects.equals(s, AppConstants.OAUTH_SCOPE_OPENID) &&
-                    !Objects.equals(s, AppConstants.OAUTH_SCOPE_PROFILE) &&
-                    !Objects.equals(s, AppConstants.OAUTH_SCOPE_READ) &&
-                    !Objects.equals(s, AppConstants.OAUTH_SCOPE_WRITE)) {
+                    !Objects.equals(s, AppConstants.OAUTH_SCOPE_PROFILE)) {
                 throw new ValidationException(String.format("'%s' is not a valid scope.", s));
             }
         }
