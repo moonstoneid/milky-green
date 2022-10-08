@@ -85,6 +85,10 @@ public class AuthorizationConsentController {
                     AppConstants.OAUTH_SCOPE_PROFILE,
                     "This application will be able to read your profile."
             );
+            scopeDescriptions.put(
+                    AppConstants.OAUTH_SCOPE_EMAIL,
+                    "This application will be able to read your email address."
+            );
         }
 
         public final String scope;

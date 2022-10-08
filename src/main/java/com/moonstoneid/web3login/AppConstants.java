@@ -9,4 +9,5 @@ public interface AppConstants {
 
     String OAUTH_SCOPE_OPENID = "openid";
     String OAUTH_SCOPE_PROFILE = "profile";
+    String OAUTH_SCOPE_EMAIL = "email";
 }

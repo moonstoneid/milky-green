@@ -17,6 +17,20 @@ public class AppProperties {
         public String key;
     }
 
+    @Getter
+    @Setter
+    public static class Eth {
+        public Provider provider;
+    }
+
+    @Getter
+    @Setter
+    public static class Provider {
+        public String url;
+    }
+
     public Api api;
+    public Eth eth;
+    public Provider provider;
 
 }
