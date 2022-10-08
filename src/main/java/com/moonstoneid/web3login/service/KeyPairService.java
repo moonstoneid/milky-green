@@ -11,8 +11,10 @@ import com.moonstoneid.web3login.model.KeyPair;
 import com.moonstoneid.web3login.repo.KeyPairRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.RSAKey;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+@Service
 public class KeyPairService {
 
     private final KeyPairRepository keyPairRepository;
@@ -24,13 +26,8 @@ public class KeyPairService {
         init();
     }
 
-    private void init(){
+    private void init() {
         get();
-    }
-    
-    public void save(RSAKey rsaKey) {
-        Assert.notNull(rsaKey, "rsaKey cannot be empty");
-        keyPairRepository.save(toEntity(rsaKey));
     }
     
     public RSAKey get() {
@@ -45,7 +42,12 @@ public class KeyPairService {
         return rsaKey;
     }
 
-    private KeyPair toEntity(RSAKey rsaKey) {
+    public void save(RSAKey rsaKey) {
+        Assert.notNull(rsaKey, "rsaKey cannot be empty");
+        keyPairRepository.save(toEntity(rsaKey));
+    }
+
+    private static KeyPair toEntity(RSAKey rsaKey) {
         try {
             KeyPair keyPair = new KeyPair();
             keyPair.setId("1");
@@ -57,7 +59,7 @@ public class KeyPairService {
         }
     }
 
-    private RSAKey toObject(KeyPair rsaKey) {
+    private static RSAKey toObject(KeyPair rsaKey) {
         try {
             RSAPublicKey pubKey = KeyPairUtils.toRSAPublicKey(rsaKey.getPublicKey());
             RSAPrivateKey privKey = KeyPairUtils.toRSAPrivateKey(rsaKey.getPrivateKey());

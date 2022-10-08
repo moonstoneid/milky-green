@@ -1,26 +1,40 @@
 package com.moonstoneid.web3login.security;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.moonstoneid.siwe.SiweMessage;
 import com.moonstoneid.siwe.error.SiweException;
+import com.moonstoneid.web3login.model.User;
+import com.moonstoneid.web3login.service.SettingService;
+import com.moonstoneid.web3login.service.UserService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class Web3AuthenticationProvider implements AuthenticationProvider {
 
-    private UserDetailsService userDetailsService;
+    private SettingService settingService;
+    private UserService userService;
 
     public Web3AuthenticationProvider() {
 
     }
 
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public void setSettingService(SettingService settingService) {
+        this.settingService = settingService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -38,9 +52,6 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         }
 
         String address = siweMessage.getAddress();
-
-        // Throws UsernameNotFoundException
-        UserDetails userDetails = userDetailsService.loadUserByUsername(address);
 
         // Try to validate signature
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
@@ -65,8 +76,32 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
             }
         }
 
+        // Try to find user
+        User user = userService.findByUsername(address);
+        // Try to import user
+        if (settingService.isAllowAutoImport() && user == null) {
+            user = new User();
+            user.setUsername(address);
+            user.setEnabled(true);
+            user.setAuthorities(new ArrayList<>());
+            userService.save(user);
+        }
+        // Check if user was found
+        if (user == null) {
+            throw new UsernameNotFoundException(address);
+        }
+
+        UserDetails userDetails = createUserDetails(user);
         Web3Principal principal = new Web3Principal(address, userDetails);
+
         return new Web3AuthenticationToken(principal, userDetails.getAuthorities());
+    }
+
+    private static UserDetails createUserDetails(User user) {
+        List<GrantedAuthority> authorities = user.getAuthorities().stream()
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), "-",
+                authorities);
     }
 
     @Override

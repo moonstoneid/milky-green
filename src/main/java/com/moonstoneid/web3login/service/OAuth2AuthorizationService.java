@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.moonstoneid.web3login.model.Authorization;
 import com.moonstoneid.web3login.repo.AuthorizationRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthorizationCode;
@@ -19,9 +20,12 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+@Service
+@Primary
 public class OAuth2AuthorizationService extends BaseOAuth2Service implements
         org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService {
 

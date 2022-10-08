@@ -8,7 +8,7 @@ import com.moonstoneid.web3login.api.doc.UsersApi;
 import com.moonstoneid.web3login.api.model.UserAM;
 import com.moonstoneid.web3login.api.model.CreateUserAM;
 import com.moonstoneid.web3login.model.User;
-import com.moonstoneid.web3login.service.UserDetailsService;
+import com.moonstoneid.web3login.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,23 +24,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api")
 public class UsersController implements UsersApi {
 
-    private final UserDetailsService userDetailsService;
+    private final UserService userService;
 
-    public UsersController(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public UsersController(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     @GetMapping(value = "/users", produces = { "application/json" })
     public @ResponseBody List<UserAM> getUsers() {
-        List<User> users = userDetailsService.getAll();
+        List<User> users = userService.getAll();
         return toApiModel(users);
     }
 
     @Override
     @GetMapping(value = "/users/{username}", produces = { "application/json" })
     public @ResponseBody UserAM getUser(@PathVariable("username") String username) {
-        User user = userDetailsService.findByUsername(username);
+        User user = userService.findByUsername(username);
         checkUserWasFound(username, user);
         return toApiModel(user);
     }
@@ -53,7 +53,7 @@ public class UsersController implements UsersApi {
         checkUsernameIsNotTaken(apiCreateUser.getUserName());
 
         User user = toModel(apiCreateUser);
-        userDetailsService.save(user);
+        userService.save(user);
         return toApiModel(user);
     }
 
@@ -61,13 +61,13 @@ public class UsersController implements UsersApi {
     @DeleteMapping(value = "/users/{username}", produces = { "application/json" })
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable("username") String username) {
-        User user = userDetailsService.findByUsername(username);
+        User user = userService.findByUsername(username);
         checkUserWasFound(username, user);
-        userDetailsService.delete(user);
+        userService.delete(user);
     }
 
     private void checkUsernameIsNotTaken(String username) {
-        User user = userDetailsService.findByUsername(username);
+        User user = userService.findByUsername(username);
         if (user != null) {
             throw new NotFoundException(String.format("A user with the username '%s' does " +
                     "already exist.", username));

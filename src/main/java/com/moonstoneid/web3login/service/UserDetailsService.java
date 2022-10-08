@@ -6,12 +6,15 @@ import java.util.stream.Collectors;
 
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.repo.UserRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.Assert;
+import org.springframework.stereotype.Service;
 
+@Service
+@Primary
 public class UserDetailsService implements
         org.springframework.security.core.userdetails.UserDetailsService {
 
@@ -32,25 +35,6 @@ public class UserDetailsService implements
                 .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
         return new org.springframework.security.core.userdetails.User(username, "-", authorities);
-    }
-
-    public User findByUsername(String username) {
-        Assert.hasText(username, "username cannot be empty");
-        return userRepository.findByUsername(username).orElse(null);
-    }
-
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
-
-    public void delete(User user) {
-        Assert.notNull(user, "user cannot be null");
-        userRepository.deleteById(user.getUsername());
-    }
-
-    public void save(User user) {
-        Assert.notNull(user, "user cannot be null");
-        userRepository.save(user);
     }
 
 }

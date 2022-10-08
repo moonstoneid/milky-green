@@ -6,13 +6,11 @@ import javax.servlet.Filter;
 import com.moonstoneid.web3login.security.ApiKeyAuthenticationFilter;
 import com.moonstoneid.web3login.security.Web3AuthenticationFilter;
 import com.moonstoneid.web3login.security.Web3AuthenticationProvider;
-import com.moonstoneid.web3login.service.UserDetailsService;
 import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.AppProperties;
-import com.moonstoneid.web3login.repo.UserRepository;
-import org.springframework.context.annotation.Bean;
+import com.moonstoneid.web3login.service.SettingService;
+import com.moonstoneid.web3login.service.UserService;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -150,10 +148,12 @@ public class WebSecurityConfig {
     @Order(5)
     public static class UserConfig extends WebSecurityConfigurerAdapter {
 
-        private final org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
+        private final SettingService settingService;
+        private final UserService userService;
 
-        public UserConfig(org.springframework.security.core.userdetails.UserDetailsService userDetailsService) {
-            this.userDetailsService = userDetailsService;
+        public UserConfig(SettingService settingService, UserService userService) {
+            this.settingService = settingService;
+            this.userService = userService;
         }
 
         @Override
@@ -196,16 +196,11 @@ public class WebSecurityConfig {
 
         private Web3AuthenticationProvider web3AuthenticationProvider() {
             Web3AuthenticationProvider provider = new Web3AuthenticationProvider();
-            provider.setUserDetailsService(userDetailsService);
+            provider.setSettingService(settingService);
+            provider.setUserService(userService);
             return provider;
         }
 
-    }
-
-    @Bean
-    @Primary
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return new UserDetailsService(userRepository);
     }
 
 }
