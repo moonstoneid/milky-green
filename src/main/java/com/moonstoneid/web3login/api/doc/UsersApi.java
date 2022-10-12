@@ -95,4 +95,40 @@ public interface UsersApi {
     })
     void deleteUser(@Parameter(description = "username", required = true) String username);
 
+    @Operation(
+        summary = "Enable a user by its username",
+        tags = { "users" },
+        security = { @SecurityRequirement(name = "apiKey") }
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "204",
+            description = "No content"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponseAM.class))
+        )
+    })
+    void enableUser(@Parameter(description = "username", required = true) String username);
+
+    @Operation(
+        summary = "Disable a user by its username",
+        tags = { "users" },
+        security = { @SecurityRequirement(name = "apiKey") }
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "204",
+            description = "No content"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponseAM.class))
+        )
+    })
+    void disableUser(@Parameter(description = "username", required = true) String username);
+
 }

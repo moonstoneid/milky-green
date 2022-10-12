@@ -2,7 +2,6 @@ package com.moonstoneid.web3login.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.moonstoneid.web3login.api.doc.UsersApi;
 import com.moonstoneid.web3login.api.model.UserAM;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,6 +66,27 @@ public class UsersController implements UsersApi {
         userService.delete(user);
     }
 
+    @Override
+    @PutMapping(value = "/users/{username}/enable", produces = { "application/json" })
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void enableUser(@PathVariable("username") String username) {
+        setUserEnabled(username, true);
+    }
+
+    @Override
+    @DeleteMapping(value = "/users/{username}/enable", produces = { "application/json" })
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void disableUser(@PathVariable("username") String username) {
+        setUserEnabled(username, false);
+    }
+
+    private void setUserEnabled(String username, boolean enabled) {
+        User user = userService.findByUsername(username);
+        checkUserWasFound(username, user);
+        user.setEnabled(enabled);
+        userService.save(user);
+    }
+
     private void checkUsernameIsNotTaken(String username) {
         User user = userService.findByUsername(username);
         if (user != null) {
@@ -76,7 +97,6 @@ public class UsersController implements UsersApi {
 
     private void validateCreateUserRequest(CreateUserAM apiCreateUser) {
         validateUsername(apiCreateUser.getUserName());
-        validateIsEnabled(apiCreateUser.getIsEnabled());
     }
 
     private void validateUsername(String username) {
@@ -85,12 +105,6 @@ public class UsersController implements UsersApi {
         }
         if (!username.matches("^0x[0-9a-fA-F]{40}$")) {
             throw new ValidationException("username is not a valid ethereum address.");
-        }
-    }
-
-    private void validateIsEnabled(Boolean isEnabled) {
-        if (isEnabled == null) {
-            throw new ValidationException("isEnabled cannot be null.");
         }
     }
 
@@ -112,7 +126,7 @@ public class UsersController implements UsersApi {
     private static User toModel(CreateUserAM apiCreateUser) {
         User user = new User();
         user.setUsername(apiCreateUser.getUserName());
-        user.setEnabled(apiCreateUser.getIsEnabled());
+        user.setEnabled(true);
         return user;
     }
 

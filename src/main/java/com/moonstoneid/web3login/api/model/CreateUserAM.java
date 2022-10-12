@@ -14,6 +14,5 @@ import java.util.Set;
 public class CreateUserAM {
 
     private String userName;
-    private Boolean isEnabled;
 
 }
