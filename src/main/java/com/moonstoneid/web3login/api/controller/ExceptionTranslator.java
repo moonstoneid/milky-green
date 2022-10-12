@@ -2,12 +2,14 @@ package com.moonstoneid.web3login.api.controller;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.moonstoneid.web3login.api.model.ErrorResponseAM;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Hidden
 @RestControllerAdvice
 public class ExceptionTranslator {
 

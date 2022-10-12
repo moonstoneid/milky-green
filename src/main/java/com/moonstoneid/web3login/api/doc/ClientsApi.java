@@ -2,6 +2,8 @@ package com.moonstoneid.web3login.api.doc;
 
 import java.util.List;
 
+import com.moonstoneid.web3login.api.model.ClientAM;
+import com.moonstoneid.web3login.api.model.CreateClientAM;
 import com.moonstoneid.web3login.api.model.ErrorResponseAM;
 import com.moonstoneid.web3login.api.model.UpdateClientAM;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,8 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import com.moonstoneid.web3login.api.model.ClientAM;
-import com.moonstoneid.web3login.api.model.CreateClientAM;
 
 @Tag(name = "clients", description = "OAuth clients API")
 public interface ClientsApi {
