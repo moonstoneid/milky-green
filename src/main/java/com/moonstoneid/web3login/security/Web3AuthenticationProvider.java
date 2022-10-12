@@ -11,6 +11,7 @@ import com.moonstoneid.web3login.service.UserService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -86,6 +87,10 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         // Check if user was found
         if (user == null) {
             throw new UsernameNotFoundException(address);
+        }
+        // Check if user is enabled
+        if (!user.isEnabled()) {
+            throw new DisabledException("User is disabled!");
         }
 
         UserDetails userDetails = createUserDetails(user);
