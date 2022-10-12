@@ -7,7 +7,7 @@ CREATE TABLE settings (
 INSERT INTO settings (setting_name, setting_value)
   VALUES ('allow_auto_import', 'true');
 
-CREATE TABLE users (
+CREATE TABLE "user" (
   username VARCHAR(50) NOT NULL,
   enabled INT NOT NULL,
   PRIMARY KEY (username)
@@ -20,12 +20,6 @@ CREATE TABLE user_ens (
   ens_url VARCHAR(1000) DEFAULT NULL,
   ens_name VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (username)
-);
-
-CREATE TABLE authorities (
- username VARCHAR(50) NOT NULL,
- authority VARCHAR(100) NOT NULL,
- PRIMARY KEY (username)
 );
 
 CREATE TABLE oauth2_registered_client (

@@ -77,18 +77,6 @@ public class UsersController implements UsersApi {
     private void validateCreateUserRequest(CreateUserAM apiCreateUser) {
         validateUsername(apiCreateUser.getUserName());
         validateIsEnabled(apiCreateUser.getIsEnabled());
-        validateAuthorities(apiCreateUser.getAuthorities());
-    }
-
-    private void validateAuthorities(Set<String> authorities) {
-        if (authorities == null || authorities.isEmpty()) {
-            throw new ValidationException("authorities cannot be null or empty.");
-        }
-        for (String authority : authorities) {
-            if (authority == null || authority.isEmpty()) {
-                throw new ValidationException("authorities cannot contain null or empty values.");
-            }
-        }
     }
 
     private void validateUsername(String username) {
@@ -125,7 +113,6 @@ public class UsersController implements UsersApi {
         User user = new User();
         user.setUsername(apiCreateUser.getUserName());
         user.setEnabled(apiCreateUser.getIsEnabled());
-        user.setAuthorities(new ArrayList<>(apiCreateUser.getAuthorities()));
         return user;
     }
 

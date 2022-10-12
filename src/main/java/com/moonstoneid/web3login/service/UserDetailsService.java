@@ -1,14 +1,13 @@
 package com.moonstoneid.web3login.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.repo.UserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,8 +30,7 @@ public class UserDetailsService implements
             throw new UsernameNotFoundException(username);
         }
 
-        List<GrantedAuthority> authorities = user.get().getAuthorities().stream()
-                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = Collections.emptyList();
 
         return new org.springframework.security.core.userdetails.User(username, "-", authorities);
     }

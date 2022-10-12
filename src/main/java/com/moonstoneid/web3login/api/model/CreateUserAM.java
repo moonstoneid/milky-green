@@ -16,5 +16,4 @@ public class CreateUserAM {
     private String userName;
     private Boolean isEnabled;
 
-    private Set<String> authorities;
 }
