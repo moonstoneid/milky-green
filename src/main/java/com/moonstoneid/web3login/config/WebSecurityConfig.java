@@ -105,7 +105,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         }
 
-        public Filter authenticationFilter() {
+        private Filter authenticationFilter() {
             ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter(appProperties.api.key);
             filter.init();
             return filter;
@@ -195,10 +195,7 @@ public class WebSecurityConfig {
         }
 
         private Web3AuthenticationProvider web3AuthenticationProvider() {
-            Web3AuthenticationProvider provider = new Web3AuthenticationProvider();
-            provider.setSettingService(settingService);
-            provider.setUserService(userService);
-            return provider;
+            return new Web3AuthenticationProvider(settingService, userService);
         }
 
     }

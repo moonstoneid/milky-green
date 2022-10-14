@@ -28,11 +28,11 @@ const consentDiv = document.getElementById('consent-div');
 
 const consentApproveButton = document.getElementById('consent-approve-button');
 consentApproveButton && consentApproveButton.addEventListener('click',
-    function(e) {authorizeWithEthereum(e);}, false);
+    function(e) {approveAuthorizeWithEthereum(e);}, false);
 
 const consentDenyButton = document.getElementById('consent-deny-button');
 consentDenyButton && consentDenyButton.addEventListener('click',
-    function(e) {authorizeWithEthereum(e);}, false);
+    function(e) {denyAuthorizeWithEthereum(e);}, false);
 
 function showConsent() {
     consentDiv.style.display = 'block';
@@ -42,8 +42,8 @@ function hideConsent() {
     consentDiv.style.display = 'none';
 }
 
-// Submits the form
-async function authorizeWithEthereum(evt) {
+// Submits the form with "approve"
+async function approveAuthorizeWithEthereum(evt) {
     evt.preventDefault();
 
     // Get client ID for consent message
@@ -65,6 +65,16 @@ async function authorizeWithEthereum(evt) {
             const form = document.getElementById('consent-form');
             form.submit();
         });
+}
+
+// Submits the form with "deny"
+async function denyAuthorizeWithEthereum(evt) {
+    evt.preventDefault();
+
+    // Submit form
+    const form = document.getElementById('consent-form');
+    form.reset();
+    form.submit();
 }
 
 // Creates a valid EIP-4361 string

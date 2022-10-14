@@ -21,43 +21,37 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class Web3AuthenticationProvider implements AuthenticationProvider {
 
-    private SettingService settingService;
-    private UserService userService;
+    private final SiweMessage.Parser messageParser = new SiweMessage.Parser();
 
-    public Web3AuthenticationProvider() {
+    private final SettingService settingService;
+    private final UserService userService;
 
-    }
-
-    public void setSettingService(SettingService settingService) {
+    public Web3AuthenticationProvider(SettingService settingService, UserService userService) {
         this.settingService = settingService;
-    }
-
-    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Web3AuthenticationToken web3Authentication = (Web3AuthenticationToken) authentication;
-        Web3Credentials credentials = web3Authentication.getCredentials();
+    public Authentication authenticate(Authentication auth) throws AuthenticationException {
+        Web3AuthenticationToken authentication = (Web3AuthenticationToken) auth;
+        Web3Credentials credentials = authentication.getCredentials();
 
         // Try to parse the message
-        // Throws an exception if message is not a valid EIP-4361 message.
-        SiweMessage siweMessage;
+        // Throws an exception if message is not a valid EIP-4361 message
+        SiweMessage message;
         try {
-            siweMessage = new SiweMessage.Parser().parse(credentials.getMessage());
+            message = messageParser.parse(credentials.getMessage());
         } catch (SiweException e) {
             throw new BadCredentialsException("Malformed message!");
         }
 
-        String address = siweMessage.getAddress();
+        String address = message.getAddress();
 
         // Try to validate signature
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
         // been reached or now < notBefore
         try {
-            // TODO: fix domain check
-            siweMessage.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
+            message.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
         } catch (SiweException e) {
             switch (e.getErrorType()) {
                 case DOMAIN_MISMATCH:

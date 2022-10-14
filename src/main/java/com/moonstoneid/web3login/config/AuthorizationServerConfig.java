@@ -1,6 +1,6 @@
 package com.moonstoneid.web3login.config;
 
-import com.moonstoneid.web3login.security.Web3AuthenticationConverter;
+import com.moonstoneid.web3login.oauth2.Web3AuthorizationRequestConverter;
 import com.moonstoneid.web3login.service.KeyPairService;
 import com.moonstoneid.web3login.service.OidcUserInfoService;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -11,38 +11,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.web.authentication.AuthenticationConverter;
 
 @Configuration
 public class AuthorizationServerConfig {
-
-    private final UserDetailsService userDetailsService;
-
-    public AuthorizationServerConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Bean
     public OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer() {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> configurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         configurer.authorizationEndpoint(authEndpoint -> authEndpoint
-                .authorizationRequestConverter(authenticationConverter())
+                .authorizationRequestConverter(authorizationRequestConverter())
                 .consentPage("/oauth2/consent"));
         return configurer;
     }
 
-    public AuthenticationConverter authenticationConverter() {
-        Web3AuthenticationConverter converter = new Web3AuthenticationConverter();
-        converter.setUserDetailsService(userDetailsService);
-        return converter;
+    public Web3AuthorizationRequestConverter authorizationRequestConverter() {
+        return new Web3AuthorizationRequestConverter();
     }
 
     @Bean
