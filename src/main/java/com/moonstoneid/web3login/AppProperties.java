@@ -20,17 +20,16 @@ public class AppProperties {
     @Getter
     @Setter
     public static class Eth {
-        public Provider provider;
+        public EthApi api;
     }
 
     @Getter
     @Setter
-    public static class Provider {
+    public static class EthApi {
         public String url;
     }
 
     public Api api;
     public Eth eth;
-    public Provider provider;
 
 }

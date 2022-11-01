@@ -1,37 +1,35 @@
-package com.moonstoneid.web3login.ens.job;
+package com.moonstoneid.web3login.ens;
 
 import java.util.List;
 
-import com.moonstoneid.web3login.config.Web3Config;
 import com.moonstoneid.web3login.ens.model.TextRecords;
-import com.moonstoneid.web3login.ens.resolver.EnsRecordsResolver;
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.model.UserEns;
 import com.moonstoneid.web3login.service.UserService;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
-@Configuration
-@EnableScheduling
-public class EnsUpdater {
+public class AsyncEnsUpdater implements EnsUpdater {
 
     private final UserService userService;
     private final EnsRecordsResolver ensResolver;
 
-    public EnsUpdater(UserService userService, Web3Config web3Config) {
+    public AsyncEnsUpdater(UserService userService, EnsRecordsResolver ensResolver) {
         this.userService = userService;
-        this.ensResolver = web3Config.recordsResolver();
+        this.ensResolver = ensResolver;
     }
 
     @Async
-    public void updateUserAsync(User user) {
-        updateUser(user);
+    @Override
+    public void updateUser(String username) {
+        User user = userService.findByUsername(username);
+        if (user != null) {
+            updateUser(user);
+        }
     }
 
-    @Scheduled(fixedDelay = 600000, initialDelay = 2000)
-    protected void refresh() {
+    @Async
+    @Override
+    public void updateUsers() {
         List<User> users = userService.getAll();
         for (User user : users) {
             updateUser(user);
@@ -39,7 +37,6 @@ public class EnsUpdater {
     }
 
     private void updateUser(User user) {
-        // trying to resolve address to ens name
         String username = user.getUsername();
         try {
             String ensDomain = ensResolver.reverseResolve(username);
@@ -55,7 +52,7 @@ public class EnsUpdater {
         userService.save(user);
     }
 
-    private void setEnsInfo (User user, String ensDomain) {
+    private void setEnsInfo(User user, String ensDomain) {
         UserEns ens = user.getEns();
         if (ens == null) {
             ens = new UserEns();
