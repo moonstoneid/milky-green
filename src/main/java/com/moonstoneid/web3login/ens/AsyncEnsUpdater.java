@@ -66,11 +66,7 @@ public class AsyncEnsUpdater implements EnsUpdater {
     }
 
     private void removeEnsInfo(User user) {
-        user.getEns().setEnsDomain(null);
-        user.getEns().setEnsName(null);
-        user.getEns().setEnsUrl(null);
-        user.getEns().setEnsEmail(null);
-        user.getEns().setUsername(null);
+        user.setEns(null);
     }
 
 }

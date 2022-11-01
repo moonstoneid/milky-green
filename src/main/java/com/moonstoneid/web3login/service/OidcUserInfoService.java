@@ -3,6 +3,7 @@ package com.moonstoneid.web3login.service;
 import java.util.Optional;
 
 import com.moonstoneid.web3login.model.User;
+import com.moonstoneid.web3login.model.UserEns;
 import com.moonstoneid.web3login.repo.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -23,16 +24,20 @@ public class OidcUserInfoService {
             throw new UsernameNotFoundException(username);
         }
 
-        String url = user.get().getEns().getEnsUrl();
-        String name = user.get().getEns().getUsername();
-        String email = user.get().getEns().getEnsEmail();
+        UserEns userEns = user.get().getEns();
+        if (userEns == null) {
+            return OidcUserInfo.builder()
+                    .subject(username)
+                    .preferredUsername(username)
+                    .build();
+        }
 
         return OidcUserInfo.builder()
                 .subject(username)
-                .name(name)
+                .name(userEns.getUsername())
                 .preferredUsername(username)
-                .website(url)
-                .email(email)
+                .website(userEns.getEnsUrl())
+                .email(userEns.getEnsEmail())
                 .build();
     }
 
