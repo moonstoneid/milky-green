@@ -9,6 +9,7 @@ import com.moonstoneid.web3login.security.Web3AuthRequestExtractor;
 import com.moonstoneid.web3login.security.Web3AuthenticationToken;
 import com.moonstoneid.web3login.security.Web3Credentials;
 import com.moonstoneid.web3login.security.Web3Principal;
+import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -23,10 +24,14 @@ public class Web3AuthorizationRequestConverter implements AuthenticationConverte
 
     private static final String DEFAULT_ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.2.1";
 
-    private final SiweMessage.Parser messageParser = new SiweMessage.Parser();
-
     private final OAuth2AuthorizationCodeRequestAuthenticationConverter baseConverter =
             new OAuth2AuthorizationCodeRequestAuthenticationConverter();
+
+    private final SiweMessageVerifier messageVerifier;
+
+    public Web3AuthorizationRequestConverter(SiweMessageVerifier messageVerifier) {
+        this.messageVerifier = messageVerifier;
+    }
 
     @Override
     public Authentication convert(HttpServletRequest request) {
@@ -49,7 +54,7 @@ public class Web3AuthorizationRequestConverter implements AuthenticationConverte
         // Try to parse the message
         SiweMessage message = null;
         try {
-            message = messageParser.parse(credentials.getMessage());
+            message = messageVerifier.parseMessage(credentials.getMessage());
         } catch (SiweException e) {
             throwError("Malformed message! " + e.getMessage());
         }
@@ -65,7 +70,7 @@ public class Web3AuthorizationRequestConverter implements AuthenticationConverte
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
         // been reached or now < notBefore
         try {
-            message.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
+            messageVerifier.verifyMessage(message, credentials.getNonce(), credentials.getSignature());
         } catch (SiweException e) {
             switch (e.getErrorType()) {
                 case DOMAIN_MISMATCH:

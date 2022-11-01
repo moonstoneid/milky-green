@@ -38,9 +38,8 @@ public class Web3SecurityJackson2Module extends SimpleModule {
 
         public Web3CredentialsMixin(@JsonProperty("message") String message,
                 @JsonProperty("signature") String signature,
-                @JsonProperty("nonce") String nonce,
-                @JsonProperty("domain") String domain) {
-            super(message, signature, nonce, domain);
+                @JsonProperty("nonce") String nonce) {
+            super(message, signature, nonce);
         }
 
     }

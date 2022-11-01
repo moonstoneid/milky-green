@@ -1,8 +1,10 @@
 package com.moonstoneid.web3login.config;
 
+import com.moonstoneid.web3login.AppProperties;
 import com.moonstoneid.web3login.oauth2.Web3AuthorizationRequestConverter;
 import com.moonstoneid.web3login.service.KeyPairService;
 import com.moonstoneid.web3login.service.OidcUserInfoService;
+import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -21,18 +23,27 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 @Configuration
 public class AuthorizationServerConfig {
 
+    private final AppProperties appProperties;
+
+    public AuthorizationServerConfig(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
+
     @Bean
-    public OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer() {
+    public OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer(
+            Web3AuthorizationRequestConverter authorizationRequestConverter) {
         OAuth2AuthorizationServerConfigurer<HttpSecurity> configurer =
                 new OAuth2AuthorizationServerConfigurer<>();
         configurer.authorizationEndpoint(authEndpoint -> authEndpoint
-                .authorizationRequestConverter(authorizationRequestConverter())
+                .authorizationRequestConverter(authorizationRequestConverter)
                 .consentPage("/oauth2/consent"));
         return configurer;
     }
 
-    public Web3AuthorizationRequestConverter authorizationRequestConverter() {
-        return new Web3AuthorizationRequestConverter();
+    @Bean
+    public Web3AuthorizationRequestConverter authorizationRequestConverter(
+            SiweMessageVerifier messageVerifier) {
+        return new Web3AuthorizationRequestConverter(messageVerifier);
     }
 
     @Bean
@@ -48,7 +59,10 @@ public class AuthorizationServerConfig {
 
     @Bean
     public ProviderSettings providerSettings() {
-        return ProviderSettings.builder().issuer("http://localhost:9000").build();
+        AppProperties.Service service = appProperties.getService();
+        return ProviderSettings.builder()
+                .issuer(service.getProtocol() + "://" + service.getDomain())
+                .build();
     }
 
     @Bean

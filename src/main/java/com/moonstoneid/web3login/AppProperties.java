@@ -13,23 +13,50 @@ public class AppProperties {
 
     @Getter
     @Setter
+    public static class Service {
+
+        private String protocol;
+        private String domain;
+
+        public void setProtocol(String protocol) {
+            if (protocol == null) {
+                throw new Error("Service protocol must be configured!");
+            }
+            if (!protocol.equals("http") && !protocol.equals("https")) {
+                throw new Error("Service protocol is invalid! Only 'http' or 'https' is allowed!'");
+            }
+            this.protocol = protocol;
+        }
+
+        public void setDomain(String domain) {
+            if (domain == null || domain.isEmpty()) {
+                throw new Error("Service domain must be configured!");
+            }
+            this.domain = domain;
+        }
+
+    }
+
+    @Getter
+    @Setter
     public static class Api {
-        public String key;
+        private String key;
     }
 
     @Getter
     @Setter
     public static class Eth {
-        public EthApi api;
+        private EthApi api;
     }
 
     @Getter
     @Setter
     public static class EthApi {
-        public String url;
+        private String url;
     }
 
-    public Api api;
-    public Eth eth;
+    private Service service;
+    private Api api;
+    private Eth eth;
 
 }

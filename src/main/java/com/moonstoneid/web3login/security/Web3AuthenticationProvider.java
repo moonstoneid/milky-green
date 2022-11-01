@@ -8,6 +8,7 @@ import com.moonstoneid.siwe.error.SiweException;
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.service.UserService;
+import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -21,14 +22,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class Web3AuthenticationProvider implements AuthenticationProvider {
 
-    private final SiweMessage.Parser messageParser = new SiweMessage.Parser();
-
     private final SettingService settingService;
     private final UserService userService;
 
-    public Web3AuthenticationProvider(SettingService settingService, UserService userService) {
+    private final SiweMessageVerifier messageVerifier;
+
+    public Web3AuthenticationProvider(SettingService settingService, UserService userService,
+            SiweMessageVerifier messageVerifier) {
         this.settingService = settingService;
         this.userService = userService;
+        this.messageVerifier = messageVerifier;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         // Throws an exception if message is not a valid EIP-4361 message
         SiweMessage message;
         try {
-            message = messageParser.parse(credentials.getMessage());
+            message = messageVerifier.parseMessage(credentials.getMessage());
         } catch (SiweException e) {
             throw new BadCredentialsException("Malformed message!");
         }
@@ -51,7 +54,7 @@ public class Web3AuthenticationProvider implements AuthenticationProvider {
         // Throws an exception if signature is invalid, mandatory fields are missing, expiration has
         // been reached or now < notBefore
         try {
-            message.verify(credentials.getDomain(), credentials.getNonce(), credentials.getSignature());
+            messageVerifier.verifyMessage(message, credentials.getNonce(), credentials.getSignature());
         } catch (SiweException e) {
             switch (e.getErrorType()) {
                 case DOMAIN_MISMATCH:

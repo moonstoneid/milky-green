@@ -36,7 +36,7 @@ public class EnsConfig {
 
     @Bean
     public EnsUpdater ensUpdater() {
-        String ethApiUrl = appProperties.eth.api.url;
+        String ethApiUrl = appProperties.getEth().getApi().getUrl();
         if (ethApiUrl == null || ethApiUrl.isEmpty()) {
             log.info("No Ethereum API URL was configured. Retrieval of ENS information is disabled.");
             return new NoOpEnsUpdater();

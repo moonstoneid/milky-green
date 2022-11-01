@@ -10,6 +10,7 @@ import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.AppProperties;
 import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.service.UserService;
+import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Configuration;
@@ -109,7 +110,7 @@ public class WebSecurityConfig {
         }
 
         private Filter authenticationFilter() {
-            String apiKey = appProperties.api.key;
+            String apiKey = appProperties.getApi().getKey();
             if (apiKey == null || apiKey.isEmpty()) {
                 log.info("No API key was configured.");
                 apiKey = RandomStringUtils.random(32, true, true);
@@ -159,9 +160,13 @@ public class WebSecurityConfig {
         private final SettingService settingService;
         private final UserService userService;
 
-        public UserConfig(SettingService settingService, UserService userService) {
+        private final SiweMessageVerifier messageVerifier;
+
+        public UserConfig(SettingService settingService, UserService userService,
+                          SiweMessageVerifier messageVerifier) {
             this.settingService = settingService;
             this.userService = userService;
+            this.messageVerifier = messageVerifier;
         }
 
         @Override
@@ -203,7 +208,7 @@ public class WebSecurityConfig {
         }
 
         private Web3AuthenticationProvider web3AuthenticationProvider() {
-            return new Web3AuthenticationProvider(settingService, userService);
+            return new Web3AuthenticationProvider(settingService, userService, messageVerifier);
         }
 
     }
