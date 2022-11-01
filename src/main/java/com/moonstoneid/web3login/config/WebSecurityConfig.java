@@ -10,6 +10,8 @@ import com.moonstoneid.web3login.AppConstants;
 import com.moonstoneid.web3login.AppProperties;
 import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +30,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class WebSecurityConfig {
 
     @Configuration
@@ -106,9 +109,14 @@ public class WebSecurityConfig {
         }
 
         private Filter authenticationFilter() {
-            ApiKeyAuthenticationFilter filter = new ApiKeyAuthenticationFilter(appProperties.api.key);
-            filter.init();
-            return filter;
+            String apiKey = appProperties.api.key;
+            if (apiKey == null || apiKey.isEmpty()) {
+                log.info("No API key was configured.");
+                apiKey = RandomStringUtils.random(32, true, true);
+                log.info("Using auto-generated API key: " + apiKey);
+            }
+
+            return new ApiKeyAuthenticationFilter(apiKey);
         }
 
     }
