@@ -1,0 +1,21 @@
+{
+  "clientId": "test",
+  "clientSecret": "test",
+  "clientName": "Test",
+  "authorizationGrantTypes": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "redirectUris": [
+    "http://127.0.0.1:8080/authorized"
+  ],
+  "scopes": [
+    "openid",
+    "profile",
+    "email"
+  ],
+  "isRequireAuthorizationConsent": true,
+  "accessTokenValidity": 300,
+  "refreshTokenValidity": 3600,
+  "isReuseRefreshTokens": true
+}
