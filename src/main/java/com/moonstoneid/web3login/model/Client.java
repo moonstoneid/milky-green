@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "oauth2_registered_client")
+@Table(name = "oauth2_client")
 public class Client {
 
     @Id

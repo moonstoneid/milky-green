@@ -16,10 +16,10 @@ public class Authorization {
     @Id
     @Column(name = "id", length = 100)
     private String id;
-    @Column(name = "registered_client_id", length = 100)
-    private String registeredClientId;
-    @Column(name = "principal_name", length = 200)
-    private String principalName;
+    @Column(name = "client_id", length = 100)
+    private String clientId;
+    @Column(name = "username", length = 200)
+    private String username;
     @Column(name = "authorization_grant_type", length = 100)
     private String authorizationGrantType;
 

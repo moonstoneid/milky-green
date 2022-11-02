@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 public class AuthorizationConsent {
 
     @Id
-    @Column(name = "registered_client_id", length = 100)
-    private String registeredClientId;
+    @Column(name = "client_id", length = 100)
+    private String clientId;
     @Id
-    @Column(name = "principal_name", length = 200)
-    private String principalName;
+    @Column(name = "username", length = 200)
+    private String username;
     @Column(name = "authorities", length = 1000)
     private String authorities;
 
@@ -31,8 +31,8 @@ public class AuthorizationConsent {
     @AllArgsConstructor
     public static class AuthorizationConsentId implements Serializable {
 
-        private String registeredClientId;
-        private String principalName;
+        private String clientId;
+        private String username;
 
     }
 

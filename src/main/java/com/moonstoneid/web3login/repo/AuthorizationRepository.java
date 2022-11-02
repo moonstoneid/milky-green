@@ -27,9 +27,9 @@ public interface AuthorizationRepository extends JpaRepository<Authorization, St
             @Param("token") String token);
 
     @Query("select a from Authorization a" +
-            " where a.principalName = :principalName"
+            " where a.username = :username"
     )
-    List<Authorization> getAuthorizationsByPrincipalName(
-            @Param("principalName") String principalName);
+    List<Authorization> getAuthorizationsByUsername(
+            @Param("username") String username);
 
 }

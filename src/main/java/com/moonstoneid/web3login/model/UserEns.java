@@ -13,7 +13,7 @@ import lombok.Data;
 public class UserEns {
 
     @Id
-    @Column(name = "username", length = 100)
+    @Column(name = "username", length = 50)
     private String username;
 
     @Column(name = "ens_domain", length = 255)

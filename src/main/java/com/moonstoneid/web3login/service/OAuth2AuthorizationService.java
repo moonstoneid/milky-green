@@ -82,25 +82,25 @@ public class OAuth2AuthorizationService extends BaseOAuth2Service implements
     public List<OAuth2Authorization> getByPrincipalName(String principalName) {
         Assert.hasText(principalName, "principalName cannot be empty");
 
-        List<Authorization> authorizations = authorizationRepository.getAuthorizationsByPrincipalName(
+        List<Authorization> authorizations = authorizationRepository.getAuthorizationsByUsername(
                 principalName);
 
         return authorizations.stream().map(this::toObject).collect(Collectors.toList());
     }
 
     private OAuth2Authorization toObject(Authorization entity) {
-        String registeredClientId = entity.getRegisteredClientId();
-        RegisteredClient registeredClient = registeredClientRepository.findById(registeredClientId);
+        String clientId = entity.getClientId();
+        RegisteredClient registeredClient = registeredClientRepository.findById(clientId);
         if (registeredClient == null) {
             throw new DataRetrievalFailureException(String.format("The RegisteredClient with ID " +
-                    "'%s' was not found.", registeredClientId));
+                    "'%s' was not found.", clientId));
         }
 
         OAuth2Authorization.Builder builder = OAuth2Authorization.withRegisteredClient(
                 registeredClient);
 
         builder.id(entity.getId());
-        builder.principalName(entity.getPrincipalName());
+        builder.principalName(entity.getUsername());
         builder.authorizationGrantType(resolveAuthorizationGrantType(
                         entity.getAuthorizationGrantType()));
         builder.attributes(attributes -> attributes.putAll(parseMap(entity.getAttributes())));
@@ -147,8 +147,8 @@ public class OAuth2AuthorizationService extends BaseOAuth2Service implements
         Authorization entity = new Authorization();
 
         entity.setId(authorization.getId());
-        entity.setRegisteredClientId(authorization.getRegisteredClientId());
-        entity.setPrincipalName(authorization.getPrincipalName());
+        entity.setClientId(authorization.getRegisteredClientId());
+        entity.setUsername(authorization.getPrincipalName());
         entity.setAuthorizationGrantType(authorization.getAuthorizationGrantType().getValue());
         entity.setAttributes(writeMap(authorization.getAttributes()));
         entity.setState(authorization.getAttribute(OAuth2ParameterNames.STATE));

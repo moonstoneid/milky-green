@@ -7,6 +7,13 @@ CREATE TABLE settings (
 INSERT INTO settings (setting_name, setting_value)
   VALUES ('allow_auto_import', 'true');
 
+CREATE TABLE jwk_keypair (
+  id VARCHAR(100) NOT NULL,
+  private_key VARCHAR(2000) DEFAULT NULL,
+  public_key VARCHAR(2000) DEFAULT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE user (
   username VARCHAR(50) NOT NULL,
   enabled INT NOT NULL,
@@ -14,15 +21,17 @@ CREATE TABLE user (
 );
 
 CREATE TABLE user_ens (
-  username VARCHAR(100) NOT NULL,
+  username VARCHAR(50) NOT NULL,
   ens_domain VARCHAR(255) DEFAULT NULL,
   ens_email VARCHAR(255) DEFAULT NULL,
   ens_url VARCHAR(1000) DEFAULT NULL,
   ens_name VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY (username)
+  PRIMARY KEY (username),
+  CONSTRAINT fk_userens_user FOREIGN KEY (username)
+    REFERENCES user (username) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE oauth2_registered_client (
+CREATE TABLE oauth2_client (
   id VARCHAR(100) NOT NULL,
   client_id VARCHAR(100) NOT NULL,
   client_id_issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -40,8 +49,8 @@ CREATE TABLE oauth2_registered_client (
 
 CREATE TABLE oauth2_authorization (
   id VARCHAR(100) NOT NULL,
-  registered_client_id VARCHAR(100) NOT NULL,
-  principal_name VARCHAR(200) NOT NULL,
+  client_id VARCHAR(100) NOT NULL,
+  username VARCHAR(50) NOT NULL,
   authorization_grant_type VARCHAR(100) NOT NULL,
   attributes BLOB DEFAULT NULL,
   state VARCHAR(500) DEFAULT NULL,
@@ -63,19 +72,24 @@ CREATE TABLE oauth2_authorization (
   id_token_expires_at TIMESTAMP DEFAULT NULL,
   id_token_claims VARCHAR(2000) DEFAULT NULL,
   id_token_metadata BLOB DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  KEY fk_oauth2authorization_clientid (client_id),
+  KEY fk_oauth2authorization_username (username),
+  CONSTRAINT fk_oauth2authorization_oauth2client FOREIGN KEY (client_id)
+    REFERENCES oauth2_client (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_oauth2authorization_user FOREIGN KEY (username)
+    REFERENCES user (username) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE oauth2_authorization_consent (
-  registered_client_id VARCHAR(100) NOT NULL,
-  principal_name VARCHAR(200) NOT NULL,
+  client_id VARCHAR(100) NOT NULL,
+  username VARCHAR(50) NOT NULL,
   authorities VARCHAR(1000) NOT NULL,
-  PRIMARY KEY (registered_client_id, principal_name)
-);
-
-CREATE TABLE jwk_keypair (
-  id VARCHAR(100) NOT NULL,
-  private_key VARCHAR(2000) DEFAULT NULL,
-  public_key VARCHAR(2000) DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (client_id, username),
+  KEY fk_oauth2authorizationconsent_clientid (client_id),
+  KEY fk_oauth2authorizationconsent_username (username),
+  CONSTRAINT fk_oauth2authorizationconsent_oauth2client FOREIGN KEY (client_id)
+    REFERENCES oauth2_client (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_oauth2authorizationconsent_user FOREIGN KEY (username)
+    REFERENCES user (username) ON DELETE CASCADE ON UPDATE CASCADE
 );

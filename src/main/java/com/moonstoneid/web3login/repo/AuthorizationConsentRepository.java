@@ -13,13 +13,12 @@ import org.springframework.stereotype.Repository;
 public interface AuthorizationConsentRepository extends JpaRepository<AuthorizationConsent,
         AuthorizationConsent.AuthorizationConsentId> {
 
-    Optional<AuthorizationConsent> findByRegisteredClientIdAndPrincipalName(String registeredClientId,
-            String principalName);
+    Optional<AuthorizationConsent> findByClientIdAndUsername(String clientId, String username);
 
     @Query("select a from AuthorizationConsent a" +
-            " where a.principalName = :principalName"
+            " where a.username = :username"
     )
-    List<AuthorizationConsent> getAuthorizationConsentsByPrincipalName(
-            @Param("principalName") String principalName);
+    List<AuthorizationConsent> getAuthorizationConsentsByUsername(
+            @Param("username") String username);
 
 }

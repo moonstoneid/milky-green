@@ -49,29 +49,29 @@ public class OAuth2AuthorizationConsentService extends BaseOAuth2Service impleme
     public OAuth2AuthorizationConsent findById(String registeredClientId, String principalName) {
         Assert.hasText(registeredClientId, "registeredClientId cannot be empty");
         Assert.hasText(principalName, "principalName cannot be empty");
-        return authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
-                registeredClientId, principalName).map(this::toObject).orElse(null);
+        return authorizationConsentRepository.findByClientIdAndUsername(registeredClientId,
+                principalName).map(this::toObject).orElse(null);
     }
 
     public List<OAuth2AuthorizationConsent> getByPrincipalName(String principalName) {
         Assert.hasText(principalName, "principalName cannot be empty");
 
         List<AuthorizationConsent> authorizationConsents = authorizationConsentRepository
-                .getAuthorizationConsentsByPrincipalName(principalName);
+                .getAuthorizationConsentsByUsername(principalName);
 
         return authorizationConsents.stream().map(this::toObject).collect(Collectors.toList());
     }
 
     private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {
-        String registeredClientId = authorizationConsent.getRegisteredClientId();
-        RegisteredClient registeredClient = registeredClientRepository.findById(registeredClientId);
+        String clientId = authorizationConsent.getClientId();
+        RegisteredClient registeredClient = registeredClientRepository.findById(clientId);
         if (registeredClient == null) {
             throw new DataRetrievalFailureException(String.format("The RegisteredClient with ID " +
-                    "'%s' was not found.", registeredClientId));
+                    "'%s' was not found.", clientId));
         }
 
         OAuth2AuthorizationConsent.Builder builder = OAuth2AuthorizationConsent.withId(
-                registeredClientId, authorizationConsent.getPrincipalName());
+                clientId, authorizationConsent.getUsername());
 
         if (authorizationConsent.getAuthorities() != null) {
             for (String authority : StringUtils.commaDelimitedListToSet(
@@ -86,8 +86,8 @@ public class OAuth2AuthorizationConsentService extends BaseOAuth2Service impleme
     private AuthorizationConsent toEntity(OAuth2AuthorizationConsent authorizationConsent) {
         AuthorizationConsent entity = new AuthorizationConsent();
 
-        entity.setRegisteredClientId(authorizationConsent.getRegisteredClientId());
-        entity.setPrincipalName(authorizationConsent.getPrincipalName());
+        entity.setClientId(authorizationConsent.getRegisteredClientId());
+        entity.setUsername(authorizationConsent.getPrincipalName());
 
         Set<String> authorities = new HashSet<>();
         for (GrantedAuthority authority : authorizationConsent.getAuthorities()) {
