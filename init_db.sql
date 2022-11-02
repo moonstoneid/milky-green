@@ -1,4 +1,4 @@
-INSERT INTO "user" (username, enabled)
+INSERT INTO user (username, enabled)
   VALUES ('0x983110309620D911731Ac0932219af06091b6744', 1);
 
 INSERT INTO oauth2_registered_client (id, client_id, client_id_issued_at, client_secret,
