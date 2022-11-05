@@ -1,6 +1,7 @@
 # IntelliJ project files
 /.idea
 *.iml
+!/.idea/runConfigurations/Docker.xml
 
 # Eclipse project files
 /.settings
