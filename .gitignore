@@ -1,7 +1,9 @@
 # IntelliJ project files
 /.idea
 *.iml
+!/.idea/runConfigurations/Attach_Debugger.xml
 !/.idea/runConfigurations/Docker.xml
+!/.idea/runConfigurations/Docker_Debug.xml
 
 # Eclipse project files
 /.settings
