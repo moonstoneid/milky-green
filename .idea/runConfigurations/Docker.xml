@@ -13,6 +13,10 @@
               <option name="name" value="DOCKER_CERT_PATH" />
               <option name="value" value="" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DOCKER_BUILDKIT" />
+              <option name="value" value="1" />
+            </DockerEnvVarImpl>
           </list>
         </option>
         <option name="commandLineOptions" value="--build" />
@@ -21,8 +25,6 @@
         <option name="upTimeout" value="" />
       </settings>
     </deployment>
-    <method v="2">
-      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="package" />
-    </method>
+    <method v="2" />
   </configuration>
 </component>
