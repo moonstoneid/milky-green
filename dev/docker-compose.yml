@@ -4,7 +4,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
-      - ${PWD}/db-scripts:/docker-entrypoint-initdb.d:ro
+      - ${PWD}/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql:ro
       - db:/var/lib/mysql
     healthcheck:
       test: ["CMD-SHELL", "mysql -uroot -proot -e 'SELECT 1;' || exit 1"]
@@ -17,7 +17,7 @@ services:
       - web3-login
   app:
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
     env_file: .env
     environment:

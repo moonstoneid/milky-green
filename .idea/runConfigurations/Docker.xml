@@ -17,10 +17,14 @@
               <option name="name" value="DOCKER_BUILDKIT" />
               <option name="value" value="1" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="COMPOSE_PROJECT_NAME" />
+              <option name="value" value="web3-login" />
+            </DockerEnvVarImpl>
           </list>
         </option>
         <option name="commandLineOptions" value="--build" />
-        <option name="sourceFilePath" value="docker-compose.yml" />
+        <option name="sourceFilePath" value="dev/docker-compose.yml" />
         <option name="upExitCodeFromService" value="" />
         <option name="upTimeout" value="" />
       </settings>
