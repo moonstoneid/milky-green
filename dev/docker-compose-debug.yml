@@ -1,0 +1,7 @@
+services:
+  app:
+    environment:
+      - JAVA_ARGS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
+    ports:
+      - "8000:8000"
+      - "8080:8080"

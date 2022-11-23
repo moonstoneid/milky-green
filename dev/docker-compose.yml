@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mariadb:10.6
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ${PWD}/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql:ro
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -proot -e 'SELECT 1;' || exit 1"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "3306:3306"
+    networks:
+      - web3-login
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_SCHEME=web3_login
+    ports:
+      - "8080:8080"
+    networks:
+      - web3-login
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db:
+
+networks:
+  web3-login:

@@ -1,0 +1,39 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Docker Debug" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+    <deployment type="docker-compose.yml">
+      <settings>
+        <option name="envFilePath" value="" />
+        <option name="envVars">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="DOCKER_TLS_VERIFY" />
+              <option name="value" value="" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DOCKER_CERT_PATH" />
+              <option name="value" value="" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DOCKER_BUILDKIT" />
+              <option name="value" value="1" />
+            </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="COMPOSE_PROJECT_NAME" />
+              <option name="value" value="web3-login" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
+        <option name="commandLineOptions" value="--build" />
+        <option name="secondarySourceFiles">
+          <list>
+            <option value="dev/docker-compose-debug.yml" />
+          </list>
+        </option>
+        <option name="sourceFilePath" value="dev/docker-compose.yml" />
+        <option name="upExitCodeFromService" value="" />
+        <option name="upTimeout" value="" />
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>

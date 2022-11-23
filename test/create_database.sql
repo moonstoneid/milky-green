@@ -1,0 +1,1 @@
+CREATE DATABASE web3_login;
