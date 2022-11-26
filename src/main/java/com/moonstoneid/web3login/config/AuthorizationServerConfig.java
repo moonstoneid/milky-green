@@ -5,6 +5,7 @@ import com.moonstoneid.web3login.eth.SiweMessageVerifier;
 import com.moonstoneid.web3login.oauth2.Web3AuthorizationRequestConverter;
 import com.moonstoneid.web3login.service.KeyPairService;
 import com.moonstoneid.web3login.service.OidcUserInfoService;
+import com.moonstoneid.web3login.view.controller.AuthorizationConsentController;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -36,7 +37,7 @@ public class AuthorizationServerConfig {
                 new OAuth2AuthorizationServerConfigurer<>();
         configurer.authorizationEndpoint(authEndpoint -> authEndpoint
                 .authorizationRequestConverter(authorizationRequestConverter)
-                .consentPage("/oauth2/consent"));
+                .consentPage(AuthorizationConsentController.PATH_CONSENT));
         return configurer;
     }
 

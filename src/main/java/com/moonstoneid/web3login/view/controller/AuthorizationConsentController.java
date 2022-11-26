@@ -22,6 +22,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AuthorizationConsentController {
 
+    public static final String PATH_CONSENT = "/oauth2/consent";
+
+    private static final String VIEW_CONSENT = "consent";
+
+    private static final String ATTRIBUTE_CLIENT_ID = "clientId";
+    private static final String ATTRIBUTE_STATE = "state";
+    private static final String ATTRIBUTE_SCOPES = "scopes";
+    private static final String ATTRIBUTE_PREVIOUSLY_APPROVED_SCOPES = "previouslyApprovedScopes";
+    private static final String ATTRIBUTE_PRINCIPAL_NAME = "principalName";
+
     private final RegisteredClientRepository registeredClientRepository;
     private final OAuth2AuthorizationConsentService authorizationConsentService;
 
@@ -31,7 +41,7 @@ public class AuthorizationConsentController {
         this.authorizationConsentService = authorizationConsentService;
     }
 
-    @GetMapping(value = "/oauth2/consent")
+    @GetMapping(value = PATH_CONSENT)
     public String consent(Principal principal, Model model,
               @RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
               @RequestParam(OAuth2ParameterNames.SCOPE) String scope,
@@ -59,13 +69,14 @@ public class AuthorizationConsentController {
             }
         }
 
-        model.addAttribute("clientId", clientId);
-        model.addAttribute("state", state);
-        model.addAttribute("scopes", withDescription(scopesToApprove));
-        model.addAttribute("previouslyApprovedScopes", withDescription(previouslyApprovedScopes));
-        model.addAttribute("principalName", principal.getName());
+        model.addAttribute(ATTRIBUTE_CLIENT_ID, clientId);
+        model.addAttribute(ATTRIBUTE_STATE, state);
+        model.addAttribute(ATTRIBUTE_SCOPES, withDescription(scopesToApprove));
+        model.addAttribute(ATTRIBUTE_PREVIOUSLY_APPROVED_SCOPES, withDescription(
+                previouslyApprovedScopes));
+        model.addAttribute(ATTRIBUTE_PRINCIPAL_NAME, principal.getName());
 
-        return "consent";
+        return VIEW_CONSENT;
     }
 
     private static Set<ScopeWithDescription> withDescription(Set<String> scopes) {
