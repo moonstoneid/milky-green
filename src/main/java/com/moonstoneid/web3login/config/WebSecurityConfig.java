@@ -64,8 +64,8 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                    .antMatchers("/api", "/api/api-spec", "/api/api-spec/*", "/api/swagger-ui",
-                            "/api/swagger-ui/*")
+                    .antMatchers("/api", "/api/", "/api/api-spec", "/api/api-spec/*",
+                            "/api/swagger-ui", "/api/swagger-ui/*")
                     .and()
                 .authorizeRequests()
                     .anyRequest().permitAll()
