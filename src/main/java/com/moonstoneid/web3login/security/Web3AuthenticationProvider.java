@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.moonstoneid.siwe.SiweMessage;
 import com.moonstoneid.siwe.error.SiweException;
+import com.moonstoneid.web3login.eth.SiweMessageVerifier;
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.service.SettingService;
 import com.moonstoneid.web3login.service.UserService;
-import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;

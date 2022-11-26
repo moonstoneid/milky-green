@@ -5,11 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.moonstoneid.siwe.SiweMessage;
 import com.moonstoneid.siwe.error.SiweException;
-import com.moonstoneid.web3login.security.Web3AuthRequestExtractor;
+import com.moonstoneid.web3login.eth.SiweMessageVerifier;
 import com.moonstoneid.web3login.security.Web3AuthenticationToken;
+import com.moonstoneid.web3login.security.Web3AuthRequestExtractor;
 import com.moonstoneid.web3login.security.Web3Credentials;
 import com.moonstoneid.web3login.security.Web3Principal;
-import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

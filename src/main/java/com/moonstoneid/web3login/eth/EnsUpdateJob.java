@@ -1,4 +1,4 @@
-package com.moonstoneid.web3login.ens;
+package com.moonstoneid.web3login.eth;
 
 import org.springframework.scheduling.annotation.Scheduled;
 

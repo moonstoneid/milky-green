@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import com.moonstoneid.siwe.error.SiweException;
 import com.moonstoneid.siwe.util.Utils;
-import com.moonstoneid.web3login.siwe.SiweMessageCreator;
+import com.moonstoneid.web3login.eth.SiweMessageCreator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

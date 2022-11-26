@@ -1,10 +1,10 @@
 package com.moonstoneid.web3login.config;
 
 import com.moonstoneid.web3login.AppProperties;
+import com.moonstoneid.web3login.eth.SiweMessageVerifier;
 import com.moonstoneid.web3login.oauth2.Web3AuthorizationRequestConverter;
 import com.moonstoneid.web3login.service.KeyPairService;
 import com.moonstoneid.web3login.service.OidcUserInfoService;
-import com.moonstoneid.web3login.siwe.SiweMessageVerifier;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;

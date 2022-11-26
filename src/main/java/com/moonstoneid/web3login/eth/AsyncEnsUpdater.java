@@ -1,8 +1,8 @@
-package com.moonstoneid.web3login.ens;
+package com.moonstoneid.web3login.eth;
 
 import java.util.List;
 
-import com.moonstoneid.web3login.ens.model.TextRecords;
+import com.moonstoneid.web3login.eth.model.TextRecords;
 import com.moonstoneid.web3login.model.User;
 import com.moonstoneid.web3login.model.UserEns;
 import com.moonstoneid.web3login.service.UserService;

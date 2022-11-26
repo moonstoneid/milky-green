@@ -1,22 +1,18 @@
-package com.moonstoneid.web3login.siwe;
+package com.moonstoneid.web3login.eth;
 
 import java.time.OffsetDateTime;
 
 import com.moonstoneid.siwe.SiweMessage;
 import com.moonstoneid.siwe.error.SiweException;
-import com.moonstoneid.web3login.AppProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 public class SiweMessageCreator {
 
     private final String signingDomain;
     private final String signingUri;
 
-    public SiweMessageCreator(AppProperties appProperties) {
-        AppProperties.Service service = appProperties.getService();
-        this.signingDomain = service.getDomain();
-        this.signingUri = service.getProtocol() + "://" + service.getDomain();
+    public SiweMessageCreator(String serviceProtocol, String serviceDomain) {
+        this.signingDomain = serviceDomain;
+        this.signingUri = serviceProtocol + "://" + serviceDomain;
     }
 
     public String createMessage(int chainId, String address, String statement, String nonce)

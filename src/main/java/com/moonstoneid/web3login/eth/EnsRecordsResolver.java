@@ -1,6 +1,6 @@
-package com.moonstoneid.web3login.ens;
+package com.moonstoneid.web3login.eth;
 
-import com.moonstoneid.web3login.ens.model.TextRecordsInterface;
+import com.moonstoneid.web3login.eth.model.TextRecordsInterface;
 import org.web3j.ens.EnsResolver;
 import org.web3j.ens.NameHash;
 import org.web3j.ens.contracts.generated.OffchainResolverContract;
