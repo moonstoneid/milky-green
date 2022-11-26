@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Error</title>
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="text-center">
+  <div>
+    <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
+    <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
+    <p class="mt-0 mb-3 text">Sorry, there has been a problem.</p>
+    <div class="mt-5">
+      <h4 class="h4 mb-3 font-weight-normal" th:text="${errorStatus}">400</h4>
+      <p class="mt-0 mb-3 text" th:text="${errorMessage}">Invalid request</p>
+    </p>
+    </div>
+  </div>
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+</body>
+</html>
