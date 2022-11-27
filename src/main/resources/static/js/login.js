@@ -6,7 +6,7 @@ const connectWalletHandler = function() {
 
 const connectWalletSuccessCallback = function () {
     hideConnectWalletButton();
-    showInfo("Please check your wallet to sign the message.");
+    showInfo('Please check your wallet to sign the message.');
     loginInWithEthereum();
 }
 
@@ -26,15 +26,15 @@ function hideConnectWalletButton() {
     connectWalletButton.style.display = 'none';
 }
 
-const infoDiv = document.getElementById('info-div');
+const infoContainer = document.getElementById('info-container');
 
 function showInfo(message) {
-    infoDiv.innerHTML = message;
-    infoDiv.style.display = 'block';
+    infoContainer.innerHTML = message;
+    infoContainer.style.display = 'block';
 }
 
 function hideInfo() {
-    infoDiv.style.display = 'none';
+    infoContainer.style.display = 'none';
 }
 
 // Submits the form
@@ -56,7 +56,7 @@ async function loginInWithEthereum() {
             form.submit();
         })
         .catch(() => {
-            showInfo("Please sign the message to sign in.");
+            showInfo('Please sign the message to sign in.');
             showConnectWalletButton();
         });
 }

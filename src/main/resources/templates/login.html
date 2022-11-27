@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="https://www.thymeleaf.org">
+  xmlns:th="https://www.thymeleaf.org"
+  style="height: 100%">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Login</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center" style="display:flex">
-  <div>
+<body style="height: 100%; display:flex">
+  <div class="content-container">
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h3 class="h3 mb-3 font-weight-normal">Sign-In with Ethereum</h3>
-    <p class="mt-0 mb-3 text">This is a simple OpenID Connect provider which supports Sign-In with Ethereum (EIP-4361).</p>
-    <div th:if="${param.error}">
+    <p class="mt-0 mb-3 text">
+      This is a simple OpenID Connect provider which supports Sign-In with Ethereum (EIP-4361).
+    </p>
+    <div id="error-container" th:if="${param.error}">
       <p class="mt-5 mb-3 text-muted">Invalid address or signature.</p>
     </div>
-    <div id="info-div" class="mt-5 mb-3 text-muted" style="display: none"></div>
+    <div id="info-container" class="mt-5 mb-3 text-muted" style="display: none"></div>
     <div class="mt-5">
       <button id="connect-wallet-button" class="btn btn-lg btn-dark">Connect Wallet</button>
     </div>
@@ -24,7 +28,6 @@
       <input type="hidden" name="signature" id="siwe-signature">
     </form>
   </div>
-  <!--  TODO: NO ES module available for walletconnect; use webpack? -->
   <script type="text/javascript" src="/js/bootstrap.js"></script>
   <script type="text/javascript" src="/js/ethers.js"></script>
   <script type="text/javascript" src="/js/walletconnect.js"></script>

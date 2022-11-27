@@ -3,25 +3,28 @@
   xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Consent</title>
   <meta th:name="_csrf" th:content="${_csrf.token}"/>
   <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center">
-  <div>
+<body>
+  <div class="content-container">
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
     <h5 class="h5 mb-3 font-weight-normal">Consent required</h5>
-    <div id="error-div" style="display: none"></div>
-    <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">Connect Wallet</button>
-    <div id="consent-div" style="display: none">
+    <div id="error-container" style="display: none"></div>
+    <button id="connect-wallet-button" class="btn btn-lg btn-dark" style="display: none">
+      Connect Wallet
+    </button>
+    <div id="consent-container" style="display: none">
       <p class="mt-0 mb-3 text">
         The application
         <span id="oauth-client-id" th:text="${clientId}"></span>
         wants to access your account<br>
-        <span th:text="${principalName}"></span>
+        <span class="eth-address" th:text="${principalName}"></span>
         .
       </p>
       <p class="mt-0 mb-3 text">
@@ -36,10 +39,11 @@
         <input name="signature" type="hidden" id="siwe-signature">
 
         <div th:each="scope: ${scopes}">
-          <input name="scope"
-                 type="checkbox"
-                 th:id="${scope.scope}"
-                 th:value="${scope.scope}">
+          <input
+              th:id="${scope.scope}"
+              name="scope"
+              type="checkbox"
+              th:value="${scope.scope}">
           <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
           <p th:text="${scope.description}"></p>
         </div>
@@ -48,21 +52,25 @@
           You have already granted the following permissions to the above app:
         </p>
         <div th:each="scope: ${previouslyApprovedScopes}">
-          <input name="approved_scope"
-                 type="checkbox"
-                 th:id="${scope.scope}"
-                 disabled
-                 checked>
+          <input
+              th:id="${scope.scope}"
+              name="approved_scope"
+              type="checkbox"
+              disabled
+              checked>
           <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
           <p th:text="${scope.description}"></p>
         </div>
 
-        <button type="submit" id="consent-deny-button" class="btn btn-outline-danger">Cancel</button>
-        <button type="submit" id="consent-approve-button" class="btn btn btn-dark">Submit Consent</button>
+        <button id="consent-deny-button" class="btn btn-outline-danger" type="submit">
+          Cancel
+        </button>
+        <button id="consent-approve-button" class="btn btn btn-dark" type="submit">
+          Submit Consent
+        </button>
       </form>
     </div>
   </div>
-  <!--  TODO: NO ES module available for walletconnect; use webpack? -->
   <script type="text/javascript" src="/js/bootstrap.js"></script>
   <script type="text/javascript" src="/js/ethers.js"></script>
   <script type="text/javascript" src="/js/walletconnect.js"></script>

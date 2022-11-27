@@ -13,6 +13,7 @@ const connectWalletErrorCallback = function () {
     hideConsent();
     showConnectWalletButton();
 }
+
 const connectWalletButton = document.getElementById('connect-wallet-button');
 connectWalletButton && connectWalletButton.addEventListener('click', connectWalletHandler, false);
 
@@ -24,7 +25,15 @@ function hideConnectWalletButton() {
     connectWalletButton.style.display = 'none';
 }
 
-const consentDiv = document.getElementById('consent-div');
+const consentContainer = document.getElementById('consent-container');
+
+function showConsent() {
+    consentContainer.style.display = 'block';
+}
+
+function hideConsent() {
+    consentContainer.style.display = 'none';
+}
 
 const consentApproveButton = document.getElementById('consent-approve-button');
 consentApproveButton && consentApproveButton.addEventListener('click',
@@ -33,14 +42,6 @@ consentApproveButton && consentApproveButton.addEventListener('click',
 const consentDenyButton = document.getElementById('consent-deny-button');
 consentDenyButton && consentDenyButton.addEventListener('click',
     function(e) {denyAuthorizeWithEthereum(e);}, false);
-
-function showConsent() {
-    consentDiv.style.display = 'block';
-}
-
-function hideConsent() {
-    consentDiv.style.display = 'none';
-}
 
 // Submits the form with "approve"
 async function approveAuthorizeWithEthereum(evt) {

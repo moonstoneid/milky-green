@@ -12,7 +12,7 @@ function initWeb3Modal() {
         walletconnect: {
             package: WalletConnectProvider,
             options: {
-                infuraId: "b5f225423daa44d092673365889de8b7",
+                infuraId: 'b5f225423daa44d092673365889de8b7',
             }
         }
     };
@@ -30,7 +30,7 @@ async function connectWallet(successCallback, errorCallback) {
         // Open modal
         web3ModalProvider = await web3Modal.connect();
     } catch(e) {
-        console.log("Could not get a wallet connection.");
+        console.log('Could not get a wallet connection.');
         errorCallback()
         return;
     }

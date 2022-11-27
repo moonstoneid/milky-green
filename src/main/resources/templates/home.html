@@ -3,16 +3,19 @@
   xmlns:th="https://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Home</title>
   <link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="text-center">
-  <div>
+<body>
+  <div class="content-container">
     <img class="mb-4" src="/img/ethereum.svg" alt="Ethereum logo" width="72" height="72">
     <h4 class="h4 mb-3 font-weight-normal">Sign-In with Ethereum</h4>
     <p class="mt-0 mb-3 text">
-      Hello [[${username}]],
+      Hello
+      <span class="eth-address">[[${username}]]</span>
+      ,
       <br>
       your Sign-In with Ethereum was successful!
     </p>
@@ -38,17 +41,17 @@
             <td>
               <div class="revoke-consent-control revoke-consent-checkbox">
                 <input
-                        th:id="'revokeConsentCheck' + ${i.index}"
-                        id="revokeConsentCheck1"
-                        name="client_id"
-                        type="checkbox"
-                        th:value="${consent.clientId}"
-                        value="4ba680dd-b513-42a6-acab-b843eba6d846"
-                        class="revoke-consent-control-input">
+                    th:id="'revokeConsentCheck' + ${i.index}"
+                    id="revokeConsentCheck1"
+                    name="client_id"
+                    type="checkbox"
+                    th:value="${consent.clientId}"
+                    value="4ba680dd-b513-42a6-acab-b843eba6d846"
+                    class="revoke-consent-control-input">
                 <label
-                        class="revoke-consent-control-label"
-                        th:for="'revokeConsentCheck' + ${i.index}"
-                        for="revokeConsentCheck1" />
+                    class="revoke-consent-control-label"
+                    th:for="'revokeConsentCheck' + ${i.index}"
+                    for="revokeConsentCheck1"></label>
               </div>
             </td>
             <td th:text="${consent.clientName}">Client Name</td>
@@ -91,7 +94,7 @@
                   <label
                       class="delete-auth-control-label"
                       th:for="'deleteAuthCheck' + ${i.index}"
-                      for="deleteAuthCheck1" />
+                      for="deleteAuthCheck1"></label>
                 </div>
               </td>
               <td th:text="${authorization.clientName}">Client Name</td>
