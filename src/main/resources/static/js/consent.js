@@ -1,6 +1,6 @@
 import { initWeb3Modal, connectWallet, getChainId, getAccountAddress, signMessage } from '/js/base.js';
 
-const connectWalletHandler = function() {
+const connectWalletButtonHandler = function() {
     connectWallet(connectWalletSuccessCallback, connectWalletErrorCallback);
 }
 
@@ -15,7 +15,8 @@ const connectWalletErrorCallback = function () {
 }
 
 const connectWalletButton = document.getElementById('connect-wallet-button');
-connectWalletButton && connectWalletButton.addEventListener('click', connectWalletHandler, false);
+connectWalletButton && connectWalletButton.addEventListener('click', connectWalletButtonHandler,
+    false);
 
 function showConnectWalletButton() {
     connectWalletButton.style.display = 'inline-block';
@@ -102,4 +103,4 @@ async function createConsentMessage(chainId, address, clientId) {
 }
 
 initWeb3Modal();
-connectWalletHandler();
+connectWalletButtonHandler();

@@ -1,29 +1,29 @@
 import { initWeb3Modal, connectWallet, getChainId, getAccountAddress, signMessage } from '/js/base.js';
 
-const connectWalletHandler = function() {
+const loginButtonHandler = function() {
     connectWallet(connectWalletSuccessCallback, connectWalletErrorCallback);
 }
 
 const connectWalletSuccessCallback = function () {
-    hideConnectWalletButton();
-    showInfo('Please check your wallet to sign the message.');
+    hideLoginButton();
+    showInfo('Please check your wallet and sign the message.');
     loginInWithEthereum();
 }
 
 const connectWalletErrorCallback = function () {
     hideInfo();
-    showConnectWalletButton();
+    showLoginButton();
 }
 
-const connectWalletButton = document.getElementById('connect-wallet-button');
-connectWalletButton && connectWalletButton.addEventListener('click', connectWalletHandler, false);
+const loginButton = document.getElementById('login-button');
+loginButton && loginButton.addEventListener('click', loginButtonHandler, false);
 
-function showConnectWalletButton() {
-    connectWalletButton.style.display = 'inline-block';
+function showLoginButton() {
+    loginButton.style.display = 'inline-block';
 }
 
-function hideConnectWalletButton() {
-    connectWalletButton.style.display = 'none';
+function hideLoginButton() {
+    loginButton.style.display = 'none';
 }
 
 const infoContainer = document.getElementById('info-container');
@@ -56,8 +56,8 @@ async function loginInWithEthereum() {
             form.submit();
         })
         .catch(() => {
-            showInfo('Please sign the message to sign in.');
-            showConnectWalletButton();
+            showInfo('Please sign the message to sign-in.');
+            showLoginButton();
         });
 }
 
