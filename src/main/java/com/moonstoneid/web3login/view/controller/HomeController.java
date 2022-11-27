@@ -161,7 +161,9 @@ public class HomeController {
         Map<String, String[]> parameterMap = request.getParameterMap();
         String[] clientIds = parameterMap.get(FORM_PARAM_CLIENT_ID);
 
-        deleteAuthorizationConsents(consents, Arrays.asList(clientIds));
+        if (clientIds != null) {
+            deleteAuthorizationConsents(consents, Arrays.asList(clientIds));
+        }
 
         return REDIRECT_HOME;
     }
@@ -188,7 +190,9 @@ public class HomeController {
         Map<String, String[]> parameterMap = request.getParameterMap();
         String[] authorizationIds = parameterMap.get(FORM_PARAM_AUTHORIZATION_ID);
 
-        deleteAuthorizations(authorizations, Arrays.asList(authorizationIds));
+        if (authorizationIds != null) {
+            deleteAuthorizations(authorizations, Arrays.asList(authorizationIds));
+        }
 
         return REDIRECT_HOME;
     }

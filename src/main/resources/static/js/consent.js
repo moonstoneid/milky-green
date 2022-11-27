@@ -35,9 +35,23 @@ function hideConsent() {
     consentContainer.style.display = 'none';
 }
 
+let checkedScopesCnt = 0;
+const scopesContainer = document.getElementById('scopes-container');
+scopesContainer && scopesContainer.addEventListener('click',
+    function(e) {
+        if (e.target.type === 'checkbox') {
+            checkedScopesCnt = e.target.checked ? checkedScopesCnt+1 : checkedScopesCnt-1;
+            enableConsentApproveButton(checkedScopesCnt > 0);
+        }
+    }, false);
+
 const consentApproveButton = document.getElementById('consent-approve-button');
 consentApproveButton && consentApproveButton.addEventListener('click',
     function(e) {approveAuthorizeWithEthereum(e);}, false);
+
+function enableConsentApproveButton(enable) {
+    consentApproveButton.disabled = !enable;
+}
 
 const consentDenyButton = document.getElementById('consent-deny-button');
 consentDenyButton && consentDenyButton.addEventListener('click',

@@ -38,34 +38,38 @@
         <input name="message" type="hidden" id="siwe-message">
         <input name="signature" type="hidden" id="siwe-signature">
 
-        <div th:each="scope: ${scopes}">
-          <input
-              th:id="${scope.scope}"
-              name="scope"
-              type="checkbox"
-              th:value="${scope.scope}">
-          <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-          <p th:text="${scope.description}"></p>
+        <div id="scopes-container">
+          <div th:each="scope: ${scopes}">
+            <input
+                th:id="${scope.scope}"
+                name="scope"
+                type="checkbox"
+                th:value="${scope.scope}">
+            <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+            <p th:text="${scope.description}"></p>
+          </div>
         </div>
 
         <p th:if="${not #lists.isEmpty(previouslyApprovedScopes)}">
           You have already granted the following permissions to the above app:
         </p>
-        <div th:each="scope: ${previouslyApprovedScopes}">
-          <input
-              th:id="${scope.scope}"
-              name="approved_scope"
-              type="checkbox"
-              disabled
-              checked>
-          <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
-          <p th:text="${scope.description}"></p>
+        <div id="approved-scopes-container">
+          <div th:each="scope: ${previouslyApprovedScopes}">
+            <input
+                th:id="${scope.scope}"
+                name="approved_scope"
+                type="checkbox"
+                disabled
+                checked>
+            <label th:for="${scope.scope}" th:text="${scope.scope}"></label>
+            <p th:text="${scope.description}"></p>
+          </div>
         </div>
 
         <button id="consent-deny-button" class="btn btn-outline-danger" type="submit">
           Cancel
         </button>
-        <button id="consent-approve-button" class="btn btn btn-dark" type="submit">
+        <button id="consent-approve-button" class="btn btn btn-dark" type="submit" disabled>
           Submit Consent
         </button>
       </form>

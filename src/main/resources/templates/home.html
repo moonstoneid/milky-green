@@ -33,7 +33,7 @@
             <th scope="col">Scopes</th>
           </tr>
           </thead>
-          <tbody>
+          <tbody id="consents-container">
           <tr th:if="${consents.empty}">
             <td colspan="3">-</td>
           </tr>
@@ -59,9 +59,9 @@
           </tr>
           </tbody>
         </table>
-        <div th:if="${!consents.empty}">
-          <button class="btn btn-outline-dark" type="submit">Revoke</button>
-        </div>
+        <button id="revoke-consent-button" class="btn btn-outline-dark" type="submit" disabled>
+          Revoke
+        </button>
       </form>
     </div>
     <div class="home-container container-sm my-4">
@@ -76,7 +76,7 @@
               <th scope="col">Expire At</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="authorizations-container">
             <tr th:if="${authorizations.empty}">
               <td colspan="4">-</td>
             </tr>
@@ -103,12 +103,13 @@
             </tr>
           </tbody>
         </table>
-        <div th:if="${!authorizations.empty}">
-          <button class="btn btn-outline-dark" type="submit">Delete</button>
-        </div>
+        <button id="delete-authorization-button" class="btn btn-outline-dark" type="submit" disabled>
+          Delete
+        </button>
       </form>
     </div>
   </div>
   <script type="text/javascript" src="/js/bootstrap.js"></script>
+  <script type="module" src="/js/home.js"></script>
 </body>
 </html>
