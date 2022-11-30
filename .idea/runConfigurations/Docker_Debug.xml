@@ -19,7 +19,7 @@
             </DockerEnvVarImpl>
             <DockerEnvVarImpl>
               <option name="name" value="COMPOSE_PROJECT_NAME" />
-              <option name="value" value="web3-login" />
+              <option name="value" value="milkygreen" />
             </DockerEnvVarImpl>
           </list>
         </option>

@@ -14,25 +14,25 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - web3-login
+      - milkygreen
   app:
     build:
       context: ../
       dockerfile: Dockerfile
     environment:
-      - WEB3LOGIN_SERVICE_PROTOCOL=http
-      - WEB3LOGIN_SERVICE_DOMAIN=127.0.0.1:8080
-      - WEB3LOGIN_API_KEY=OvyC8erWtrHEC77y
-      - WEB3LOGIN_ETH_API_URL=
+      - MILKYGREEN_SERVICE_PROTOCOL=http
+      - MILKYGREEN_SERVICE_DOMAIN=127.0.0.1:8080
+      - MILKYGREEN_API_KEY=OvyC8erWtrHEC77y
+      - MILKYGREEN_ETH_API_URL=
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=root
-      - DB_SCHEME=web3_login
+      - DB_SCHEME=milkygreen
     ports:
       - "8080:8080"
     networks:
-      - web3-login
+      - milkygreen
     depends_on:
       db:
         condition: service_healthy
@@ -41,4 +41,4 @@ volumes:
   db:
 
 networks:
-  web3-login:
+  milkygreen:

@@ -1,18 +1,18 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="App" type="Application" factoryName="Application" nameIsGenerated="true">
     <envs>
-      <env name="WEB3LOGIN_SERVICE_PROTOCOL" value="http" />
-      <env name="WEB3LOGIN_SERVICE_DOMAIN" value="127.0.0.1:8080" />
-      <env name="WEB3LOGIN_API_KEY" value="OvyC8erWtrHEC77y" />
+      <env name="MILKYGREEN_SERVICE_PROTOCOL" value="http" />
+      <env name="MILKYGREEN_SERVICE_DOMAIN" value="127.0.0.1:8080" />
+      <env name="MILKYGREEN_API_KEY" value="OvyC8erWtrHEC77y" />
+      <env name="MILKYGREEN_ETH_API_URL" value="" />
       <env name="DB_HOST" value="localhost" />
       <env name="DB_PORT" value="3306" />
       <env name="DB_USERNAME" value="root" />
       <env name="DB_PASSWORD" value="root" />
-      <env name="DB_SCHEME" value="web3_login" />
-      <env name="WEB3LOGIN_ETH_API_URL" value="" />
+      <env name="DB_SCHEME" value="milkygreen" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="com.moonstoneid.web3login.App" />
-    <module name="web3-login" />
+    <option name="MAIN_CLASS_NAME" value="com.moonstoneid.milkygreen.App" />
+    <module name="milky-green" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

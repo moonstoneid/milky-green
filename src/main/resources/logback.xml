@@ -9,7 +9,7 @@
         </layout>
     </appender>
 
-    <logger name="org.mn.web3login" level="debug" additivity="false">
+    <logger name="com.moonstoneid.milkygreen" level="info" additivity="false">
         <appender-ref ref="CONSOLE" />
     </logger>
 

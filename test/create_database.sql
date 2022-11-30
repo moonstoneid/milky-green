@@ -1,1 +1,1 @@
-CREATE DATABASE web3_login;
+CREATE DATABASE milkygreen;
