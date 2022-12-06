@@ -16,9 +16,7 @@ services:
     networks:
       - milkygreen
   app:
-    build:
-      context: ../
-      dockerfile: Dockerfile
+    image: ghcr.io/moonstoneid/milky-green:1.0.0-alpha.1
     environment:
       - MILKYGREEN_SERVICE_PROTOCOL=http
       - MILKYGREEN_SERVICE_DOMAIN=127.0.0.1:8080
