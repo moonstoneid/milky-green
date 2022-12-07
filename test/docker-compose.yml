@@ -16,7 +16,7 @@ services:
     networks:
       - milkygreen
   app:
-    image: ghcr.io/moonstoneid/milky-green:1.0.0-alpha.1
+    image: ghcr.io/moonstoneid/milky-green:1.0.0
     environment:
       - MILKYGREEN_SERVICE_PROTOCOL=http
       - MILKYGREEN_SERVICE_DOMAIN=127.0.0.1:8080
